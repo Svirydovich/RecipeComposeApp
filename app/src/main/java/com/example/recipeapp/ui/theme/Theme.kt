@@ -37,7 +37,7 @@ private val LightColorScheme = lightColorScheme(
     onError = BackgroundColor,
     onBackground = TextPrimaryColor,
     onSurface = TextPrimaryColor,
-    onSurfaceVariant = SurfaceColor
+    onSurfaceVariant = TextSecondaryColor
 )
 
 @Composable
