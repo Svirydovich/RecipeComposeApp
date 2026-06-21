@@ -17,16 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            MaterialTheme {
-                Scaffold { paddingValues ->
-                    Text(
-                        "Recipes App",
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                }
-            }
-        }
+
     }
 }
 
