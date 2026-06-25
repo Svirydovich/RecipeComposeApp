@@ -3,6 +3,7 @@ package com.example.recipeapp.core.ui.navigation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -17,11 +18,13 @@ import com.example.recipeapp.ui.theme.Dimens
 fun BottomNavigation(onCategoriesClick: () -> Unit, onFavoriteClick: () -> Unit) {
     Row(
         modifier = Modifier
+            .navigationBarsPadding()
             .fillMaxWidth()
             .padding(horizontal = Dimens.Padding.PaddingMain),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Button(
+            modifier = Modifier.weight(1f),
             onClick = onCategoriesClick,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
             shape = RoundedCornerShape(Dimens.Padding.PaddingMedium)
@@ -29,6 +32,7 @@ fun BottomNavigation(onCategoriesClick: () -> Unit, onFavoriteClick: () -> Unit)
             Text("Категории")
         }
         Button(
+            modifier = Modifier.weight(1f),
             onClick = onFavoriteClick,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             shape = RoundedCornerShape(Dimens.Padding.PaddingMedium)
