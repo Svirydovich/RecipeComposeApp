@@ -31,6 +31,8 @@ object Dimens {
         val CardMedium = 160.dp
         val CardLarge = 200.dp
 
+        val HeaderHeight = 224.dp
+
         val DialogMinHeight = 280.dp
     }
 
