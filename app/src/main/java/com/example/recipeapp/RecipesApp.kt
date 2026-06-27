@@ -38,16 +38,9 @@ fun RecipesApp() {
                     }
                 }
 
-                ScreenId.FAVORITES -> {
-                    Box(
-                        modifier = Modifier.padding(paddingValues),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        FavoritesScreen()
-                    }
-                }
+                ScreenId.FAVORITES -> FavoritesScreen(Modifier.padding(paddingValues))
 
-                ScreenId.RECIPES -> RecipesScreen(modifier = Modifier.padding(paddingValues))
+                ScreenId.RECIPES -> RecipesScreen(Modifier.padding(paddingValues))
             }
         }
     }
