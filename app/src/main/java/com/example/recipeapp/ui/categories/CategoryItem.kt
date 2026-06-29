@@ -11,13 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import coil.compose.AsyncImage
-import com.example.recipeapp.ui.theme.Dimens
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import coil.compose.AsyncImage
 import com.example.recipeapp.R
 import com.example.recipeapp.ui.categories.model.CategoryUiModel
+import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun CategoryItem(
@@ -42,9 +41,8 @@ fun CategoryItem(
         )
         Column(Modifier.padding(Dimens.Padding.PaddingMain)) {
             Text(
-                text = category.title.uppercase(),
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                text = category.title,
+                style = MaterialTheme.typography.titleMedium
             )
             Text(
                 text = category.description,
@@ -54,4 +52,3 @@ fun CategoryItem(
         }
     }
 }
-

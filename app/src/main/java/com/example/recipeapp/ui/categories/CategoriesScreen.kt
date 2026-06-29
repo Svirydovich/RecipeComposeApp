@@ -35,7 +35,7 @@ fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int) -> Un
             verticalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(categories) { category ->
+            items(categories, key = { it.id }) { category ->
                 CategoryItem(
                     category = category,
                     onClick = { onCategoryClick(category.id) }
@@ -44,4 +44,3 @@ fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int) -> Un
         }
     }
 }
-
