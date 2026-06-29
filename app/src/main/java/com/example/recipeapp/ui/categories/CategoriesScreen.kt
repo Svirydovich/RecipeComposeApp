@@ -44,3 +44,4 @@ fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int) -> Un
         }
     }
 }
+
