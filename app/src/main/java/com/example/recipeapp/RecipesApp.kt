@@ -29,14 +29,7 @@ fun RecipesApp() {
             }
         ) { paddingValues ->
             when (currentScreen) {
-                ScreenId.CATEGORIES -> {
-                    Box(
-                        modifier = Modifier.padding(paddingValues),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CategoriesScreen()
-                    }
-                }
+                ScreenId.CATEGORIES -> CategoriesScreen(Modifier.padding(paddingValues)) { }
 
                 ScreenId.FAVORITES -> FavoritesScreen(Modifier.padding(paddingValues))
 
