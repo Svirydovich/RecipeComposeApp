@@ -14,7 +14,7 @@ import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
-fun RecipesScreen(modifier: Modifier = Modifier) {
+fun RecipesScreen(modifier: Modifier = Modifier, categoryId: Int? = null) {
     Column(modifier = modifier) {
         ScreenHeader(
             imagePainter = painterResource(R.drawable.bcg_recipes_list),
