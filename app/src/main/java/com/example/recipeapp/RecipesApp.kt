@@ -18,6 +18,7 @@ import com.example.recipeapp.ui.theme.RecipeAppTheme
 fun RecipesApp() {
     RecipeAppTheme {
         var currentScreen by remember { mutableStateOf(ScreenId.CATEGORIES) }
+        var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
         Scaffold(
             bottomBar = {
                 BottomNavigation(
@@ -28,12 +29,21 @@ fun RecipesApp() {
         ) { paddingValues ->
             when (currentScreen) {
                 ScreenId.CATEGORIES -> CategoriesScreen(
-                    Modifier.padding(paddingValues)
-                ) { categoryId -> currentScreen = ScreenId.RECIPES }
+                    modifier = Modifier.padding(paddingValues),
+                    onCategoryClick = { categoryId ->
+                        selectedCategoryId = categoryId
+                        currentScreen = ScreenId.RECIPES
+                    }
+                )
 
                 ScreenId.FAVORITES -> FavoritesScreen(Modifier.padding(paddingValues))
 
-                ScreenId.RECIPES -> RecipesScreen(Modifier.padding(paddingValues))
+                ScreenId.RECIPES -> selectedCategoryId?.let { id ->
+                    RecipesScreen(
+                        modifier = Modifier.padding(paddingValues),
+                        categoryId = id
+                    )
+                }
             }
         }
     }

@@ -42,7 +42,8 @@ fun CategoryItem(
         Column(Modifier.padding(Dimens.Padding.PaddingMain)) {
             Text(
                 text = category.title,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = category.description,
