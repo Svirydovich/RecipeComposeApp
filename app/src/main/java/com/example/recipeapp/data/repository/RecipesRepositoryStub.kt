@@ -59,6 +59,12 @@ private val burgerRecipes = listOf(
     )
 )
 
+private val dessertRecipes = emptyList<RecipeDto>()
+private val pizzaRecipes = emptyList<RecipeDto>()
+private val fishRecipes = emptyList<RecipeDto>()
+private val soupRecipes = emptyList<RecipeDto>()
+private val saladRecipes = emptyList<RecipeDto>()
+
 fun getCategories(): List<CategoryDto> {
     return categories
 }
@@ -66,6 +72,11 @@ fun getCategories(): List<CategoryDto> {
 fun getRecipesByCategoryId(categoryId: Int): List<RecipeDto> {
     return when (categoryId) {
         0 -> burgerRecipes
+        1 -> dessertRecipes
+        2 -> pizzaRecipes
+        3 -> fishRecipes
+        4 -> soupRecipes
+        5 -> saladRecipes
         else -> emptyList()
     }
 }
