@@ -34,16 +34,17 @@ fun RecipesScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(categoryId) {
-        isLoading = true
-        try {
-            val safeId = categoryId ?: error("Category ID is required")
-            recipes = getRecipesByCategoryId(safeId).map { it.toUiModel() }
-        } finally {
-            isLoading = false
+        categoryId?.let { safeId ->
+            isLoading = true
+            try {
+                recipes = getRecipesByCategoryId(safeId).map { it.toUiModel() }
+            } finally {
+                isLoading = false
+            }
         }
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
             imagePainter = painterResource(R.drawable.bcg_recipes_list),
             contentDescription = "Фоновое изображение списка рецептов",
