@@ -19,6 +19,7 @@ fun RecipesApp() {
     RecipeAppTheme {
         var currentScreen by remember { mutableStateOf(ScreenId.CATEGORIES) }
         var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
+        var selectedCategoryTitle by remember { mutableStateOf<String>("") }
         Scaffold(
             bottomBar = {
                 BottomNavigation(
@@ -30,8 +31,9 @@ fun RecipesApp() {
             when (currentScreen) {
                 ScreenId.CATEGORIES -> CategoriesScreen(
                     modifier = Modifier.padding(paddingValues),
-                    onCategoryClick = { categoryId ->
+                    onCategoryClick = { categoryId, categoryTitle ->
                         selectedCategoryId = categoryId
+                        selectedCategoryTitle = categoryTitle
                         currentScreen = ScreenId.RECIPES
                     }
                 )
@@ -41,7 +43,8 @@ fun RecipesApp() {
                 ScreenId.RECIPES -> selectedCategoryId?.let { id ->
                     RecipesScreen(
                         modifier = Modifier.padding(paddingValues),
-                        categoryId = id
+                        categoryId = id,
+                        categoryTitle = selectedCategoryTitle
                     )
                 }
             }

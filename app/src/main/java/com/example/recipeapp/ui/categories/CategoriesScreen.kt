@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import com.example.recipeapp.ui.categories.model.toUiModel
 
 @Composable
-fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int) -> Unit) {
+fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int, String) -> Unit) {
     val categories = remember {
         getCategories().map { it.toUiModel() }
     }
@@ -38,7 +38,7 @@ fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int) -> Un
             items(categories, key = { it.id }) { category ->
                 CategoryItem(
                     category = category,
-                    onClick = { onCategoryClick(category.id) }
+                    onClick = { onCategoryClick(category.id, category.title) }
                 )
             }
         }
