@@ -51,21 +51,21 @@ fun RecipesScreen(
             title = categoryTitle
         )
 
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn {
-                items(recipes, key = { it.id }) { recipe ->
-                    RecipeItem(
-                        recipe = recipe,
-                        onRecipeClick = onRecipeClick,
-                        modifier = Modifier.padding(
-                            horizontal = Dimens.Padding.PaddingMain,
-                            vertical = Dimens.Padding.PaddingMedium
+        Box(modifier = Modifier.weight(1f)) {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else {
+                LazyColumn {
+                    items(recipes, key = { it.id }) { recipe ->
+                        RecipeItem(
+                            recipe = recipe,
+                            onRecipeClick = onRecipeClick,
+                            modifier = Modifier.padding(
+                                horizontal = Dimens.Padding.PaddingMain,
+                                vertical = Dimens.Padding.PaddingMedium
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
