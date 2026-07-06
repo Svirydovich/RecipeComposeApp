@@ -56,5 +56,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.navigation.compose)
 }
-
