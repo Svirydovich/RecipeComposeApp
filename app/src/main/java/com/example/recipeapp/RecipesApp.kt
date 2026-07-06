@@ -73,7 +73,10 @@ fun RecipesApp() {
                     route = Destination.Recipes.route,
                     arguments = listOf(
                         navArgument(Destination.CATEGORY_ID_ARG) { type = NavType.IntType },
-                        navArgument(Destination.CATEGORY_TITLE_ARG) { type = NavType.StringType }
+                        navArgument(Destination.CATEGORY_TITLE_ARG) {
+                            type = NavType.StringType
+                            defaultValue = ""
+                        }
                     )
                 ) { backStackEntry ->
                     val categoryId =
