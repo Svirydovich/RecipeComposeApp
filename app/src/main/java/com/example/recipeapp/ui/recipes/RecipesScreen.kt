@@ -28,7 +28,7 @@ fun RecipesScreen(
     modifier: Modifier = Modifier,
     categoryId: Int?,
     categoryTitle: String = "",
-    onRecipeClick: (Int) -> Unit = {}
+    onRecipeClick: (Int, RecipeUiModel) -> Unit = { _, _ -> }
 ) {
     var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
@@ -59,7 +59,7 @@ fun RecipesScreen(
                     items(recipes, key = { it.id }) { recipe ->
                         RecipeItem(
                             recipe = recipe,
-                            onRecipeClick = onRecipeClick,
+                            onRecipeClick = { onRecipeClick(recipe.id, recipe) },
                             modifier = Modifier.padding(
                                 horizontal = Dimens.Padding.PaddingMain,
                                 vertical = Dimens.Padding.PaddingMedium

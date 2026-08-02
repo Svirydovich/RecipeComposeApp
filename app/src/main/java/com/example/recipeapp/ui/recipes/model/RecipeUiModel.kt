@@ -1,10 +1,13 @@
 package com.example.recipeapp.ui.recipes.model
 
+import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.example.recipeapp.Constants
 import com.example.recipeapp.data.model.RecipeDto
+import kotlinx.parcelize.Parcelize
 
 @Immutable
+@Parcelize
 data class RecipeUiModel(
     val id: Int,
     val title: String,
@@ -12,7 +15,7 @@ data class RecipeUiModel(
     val ingredients: List<IngredientUiModel>,
     val method: List<String>,
     val isFavorite: Boolean
-)
+) : Parcelable
 
 fun RecipeDto.toUiModel() = RecipeUiModel(
     id = id,
