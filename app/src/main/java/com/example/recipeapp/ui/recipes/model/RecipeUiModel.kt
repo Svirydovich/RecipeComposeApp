@@ -24,6 +24,6 @@ fun RecipeDto.toUiModel() = RecipeUiModel(
     else if (imageUrl.startsWith("http")) imageUrl
     else "${Constants.ASSETS_URI_PREFIX}$imageUrl",
     ingredients = ingredients.map { it.toUiModel() },
-    method = method,
+    method = method.map { it.replaceFirst(Regex("^\\d+\\.\\s*"), "") },
     isFavorite = false
 )

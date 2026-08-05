@@ -38,16 +38,16 @@ fun RecipeDetailsScreen(recipeId: Int, modifier: Modifier = Modifier) {
             }
         }
 
-        uiRecipe?.method?.forEach { step ->
-            StepItem(step = step)
+        uiRecipe?.method?.forEachIndexed { index, step ->
+            StepItem(stepNumber = index + 1, step = step)
         }
     }
 }
 
 @Composable
-fun StepItem(step: String, modifier: Modifier = Modifier) {
+fun StepItem(stepNumber: Int, step: String, modifier: Modifier = Modifier) {
     Text(
-        text = step,
+        text = "$stepNumber. $step",
         style = MaterialTheme.typography.bodyLarge,
         modifier = modifier
             .fillMaxWidth()
