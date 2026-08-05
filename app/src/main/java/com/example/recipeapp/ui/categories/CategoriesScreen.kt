@@ -6,16 +6,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.data.repository.getCategories
-import com.example.recipeapp.ui.theme.Dimens
-import androidx.compose.foundation.lazy.grid.items
 import com.example.recipeapp.ui.categories.model.toUiModel
+import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int, String) -> Unit) {
@@ -24,8 +23,8 @@ fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int, Strin
     }
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
-            imagePainter = painterResource(R.drawable.ic_launcher_background),
-            contentDescription = "Фоновое изображение категорий",
+            imageModel = R.drawable.ic_launcher_background,
+            contentDescription = "Фоновое изображение категории",
             title = "Категории"
         )
         LazyVerticalGrid(

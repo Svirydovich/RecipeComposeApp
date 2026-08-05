@@ -2,7 +2,6 @@ package com.example.recipeapp
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -17,7 +16,6 @@ import com.example.recipeapp.ui.categories.CategoriesScreen
 import com.example.recipeapp.ui.details.RecipeDetailsScreen
 import com.example.recipeapp.ui.favorites.FavoritesScreen
 import com.example.recipeapp.ui.recipes.RecipesScreen
-import com.example.recipeapp.ui.recipes.model.RecipeUiModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 
 @Composable
@@ -91,8 +89,6 @@ fun RecipesApp() {
                         categoryId = categoryId,
                         categoryTitle = categoryTitle,
                         onRecipeClick = { recipeId, recipe ->
-                            navController.currentBackStackEntry?.savedStateHandle
-                                ?.set(Destination.KEY_RECIPE_OBJECT, recipe)
                             navController.navigate(Destination.Details.createRoute(recipeId))
                         }
                     )
@@ -104,15 +100,8 @@ fun RecipesApp() {
                         navArgument(Destination.RECIPE_ID_ARG) { type = NavType.IntType }
                     )
                 ) { backStackEntry ->
-                    val recipe = navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.get<RecipeUiModel>(Destination.KEY_RECIPE_OBJECT)
-
-                    if (recipe != null) {
-                        RecipeDetailsScreen(recipe = recipe)
-                    } else {
-                        Text("Recipe not found")
-                    }
+                    val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: -1
+                    RecipeDetailsScreen(recipeId = recipeId, modifier = Modifier)
                 }
             }
         }

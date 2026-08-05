@@ -17,7 +17,7 @@ import com.example.recipeapp.ui.theme.Dimens
 fun FavoritesScreen(modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize()) {
         ScreenHeader(
-            imagePainter = painterResource(R.drawable.bcg_favorites),
+            imageModel = R.drawable.bcg_favorites,
             contentDescription = "Фоновое изображение избранных рецептов",
             title = "Избранное"
         )
