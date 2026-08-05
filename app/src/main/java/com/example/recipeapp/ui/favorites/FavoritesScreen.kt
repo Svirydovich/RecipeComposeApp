@@ -8,7 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.ui.theme.Dimens
@@ -17,7 +16,7 @@ import com.example.recipeapp.ui.theme.Dimens
 fun FavoritesScreen(modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize()) {
         ScreenHeader(
-            imagePainter = painterResource(R.drawable.bcg_favorites),
+            imageModel = R.drawable.bcg_favorites,
             contentDescription = "Фоновое изображение избранных рецептов",
             title = "Избранное"
         )

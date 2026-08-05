@@ -80,3 +80,18 @@ fun getRecipesByCategoryId(categoryId: Int): List<RecipeDto> {
         else -> emptyList()
     }
 }
+
+private val allRecipesById: Map<Int, RecipeDto> by lazy {
+    listOf(
+        burgerRecipes,
+        dessertRecipes,
+        pizzaRecipes,
+        fishRecipes,
+        soupRecipes,
+        saladRecipes
+    ).flatten().associateBy { it.id }
+}
+
+fun getRecipeById(recipeId: Int): RecipeDto? {
+    return allRecipesById[recipeId]
+}

@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.data.repository.getRecipesByCategoryId
@@ -46,7 +45,7 @@ fun RecipesScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
-            imagePainter = painterResource(R.drawable.bcg_recipes_list),
+            imageModel = R.drawable.bcg_recipes_list,
             contentDescription = "Фоновое изображение списка рецептов",
             title = categoryTitle
         )
