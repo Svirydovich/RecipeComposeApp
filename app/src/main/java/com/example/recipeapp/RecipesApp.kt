@@ -3,6 +3,7 @@ package com.example.recipeapp
 import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -131,9 +132,8 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                     val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
                     val recipe = getRecipeById(recipeId)?.toUiModel()
 
-                    recipe?.let {
-                        RecipeDetailsScreen(recipe = it)
-                    }
+                    if (recipe != null) RecipeDetailsScreen(recipe = recipe)
+                    else Text("Рецепт не найден")
                 }
             }
         }
