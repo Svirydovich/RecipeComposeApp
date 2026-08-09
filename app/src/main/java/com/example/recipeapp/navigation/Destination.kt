@@ -13,6 +13,7 @@ sealed class Destination(val route: String) {
 
     object Details : Destination("recipe/{$RECIPE_ID_ARG}") {
         fun createRoute(recipeId: Int) = "recipe/$recipeId"
+        fun createRecipeDeepLink(recipeId: Int) = "$DEEP_LINK_BASE_URL/recipe/$recipeId"
     }
 
     companion object {
@@ -20,5 +21,7 @@ sealed class Destination(val route: String) {
         const val CATEGORY_TITLE_ARG = "categoryTitle"
         const val RECIPE_ID_ARG = "recipeId"
         const val KEY_RECIPE_OBJECT = "recipeObject"
+        const val DEEP_LINK_SCHEME = "recipeapp"
+        const val DEEP_LINK_BASE_URL = "https://recipes.androidsprint.ru"
     }
 }
