@@ -1,8 +1,11 @@
 package com.example.recipeapp
 
+import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -11,17 +14,43 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
+import com.example.recipeapp.data.repository.getRecipeById
 import com.example.recipeapp.navigation.Destination
+import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
 import com.example.recipeapp.ui.categories.CategoriesScreen
 import com.example.recipeapp.ui.details.RecipeDetailsScreen
 import com.example.recipeapp.ui.favorites.FavoritesScreen
 import com.example.recipeapp.ui.recipes.RecipesScreen
+import com.example.recipeapp.ui.recipes.model.toUiModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
+import kotlinx.coroutines.delay
 
 @Composable
-fun RecipesApp() {
+fun RecipesApp(deepLinkIntent: Intent? = null) {
     RecipeAppTheme {
         val navController = rememberNavController()
+
+        LaunchedEffect(deepLinkIntent) {
+            deepLinkIntent?.data?.let { uri ->
+                val recipeId: Int? = when (uri.scheme) {
+                    DEEP_LINK_SCHEME ->
+                        if (uri.host == "recipe") uri.pathSegments.getOrNull(0)?.toIntOrNull()
+                        else null
+
+                    "https", "http" ->
+                        if (uri.pathSegments.getOrNull(0) == "recipe") uri.pathSegments.getOrNull(1)
+                            ?.toIntOrNull()
+                        else null
+
+                    else -> null
+                }
+
+                if (recipeId != null) {
+                    delay(100)
+                    navController.navigate(Destination.Details.createRoute(recipeId))
+                }
+            }
+        }
 
         Scaffold(
             bottomBar = {
@@ -100,8 +129,11 @@ fun RecipesApp() {
                         navArgument(Destination.RECIPE_ID_ARG) { type = NavType.IntType }
                     )
                 ) { backStackEntry ->
-                    val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: -1
-                    RecipeDetailsScreen(recipeId = recipeId, modifier = Modifier)
+                    val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
+                    val recipe = getRecipeById(recipeId)?.toUiModel()
+
+                    if (recipe != null) RecipeDetailsScreen(recipe = recipe)
+                    else Text("Рецепт не найден")
                 }
             }
         }

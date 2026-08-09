@@ -10,35 +10,41 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.data.repository.getRecipeById
-import com.example.recipeapp.ui.recipes.model.toUiModel
+import com.example.recipeapp.core.util.shareRecipe
+import com.example.recipeapp.ui.recipes.model.RecipeUiModel
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
-fun RecipeDetailsScreen(recipeId: Int, modifier: Modifier = Modifier) {
-    val uiRecipe = remember(recipeId) { getRecipeById(recipeId)?.toUiModel() }
+fun RecipeDetailsScreen(
+    recipe: RecipeUiModel,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
         ScreenHeader(
-            imageModel = uiRecipe?.imageUrl,
-            contentDescription = uiRecipe?.title ?: "",
-            title = uiRecipe?.title ?: "Рецепт не найден"
+            imageModel = recipe.imageUrl,
+            contentDescription = recipe.title,
+            title = recipe.title,
+            showShareButton = true,
+            onShareClick = { shareRecipe(context, recipe.id, recipe.title) }
         )
 
-        uiRecipe?.ingredients?.forEachIndexed { index, ingredient ->
+        recipe.ingredients.forEachIndexed { index, ingredient ->
             IngredientItem(ingredient = ingredient)
-            if (index < uiRecipe.ingredients.lastIndex) {
+            if (index < recipe.ingredients.lastIndex) {
                 HorizontalDivider()
             }
         }
 
-        uiRecipe?.method?.forEachIndexed { index, step ->
+        recipe.method.forEachIndexed { index, step ->
             StepItem(stepNumber = index + 1, step = step)
         }
     }
