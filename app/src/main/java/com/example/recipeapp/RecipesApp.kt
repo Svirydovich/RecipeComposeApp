@@ -20,6 +20,7 @@ import com.example.recipeapp.ui.categories.CategoriesScreen
 import com.example.recipeapp.ui.details.RecipeDetailsScreen
 import com.example.recipeapp.ui.favorites.FavoritesScreen
 import com.example.recipeapp.ui.recipes.RecipesScreen
+import com.example.recipeapp.ui.recipes.model.toUiModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 import kotlinx.coroutines.delay
 
@@ -32,10 +33,13 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
             deepLinkIntent?.data?.let { uri ->
                 val recipeId: Int? = when (uri.scheme) {
                     DEEP_LINK_SCHEME ->
-                        if (uri.host == "recipe") uri.pathSegments[0].toIntOrNull() else null
+                        if (uri.host == "recipe") uri.pathSegments.getOrNull(0)?.toIntOrNull()
+                        else null
 
                     "https", "http" ->
-                        if (uri.pathSegments[0] == "recipe") uri.pathSegments[1].toIntOrNull() else null
+                        if (uri.pathSegments.getOrNull(0) == "recipe") uri.pathSegments.getOrNull(1)
+                            ?.toIntOrNull()
+                        else null
 
                     else -> null
                 }
@@ -125,7 +129,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                     )
                 ) { backStackEntry ->
                     val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
-                    val recipe = getRecipeById(recipeId)
+                    val recipe = getRecipeById(recipeId)?.toUiModel()
 
                     recipe?.let {
                         RecipeDetailsScreen(recipe = it)

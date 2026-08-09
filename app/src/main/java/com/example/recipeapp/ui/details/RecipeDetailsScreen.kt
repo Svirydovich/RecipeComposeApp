@@ -14,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.core.util.shareRecipe
-import com.example.recipeapp.data.model.RecipeDto
+import com.example.recipeapp.ui.recipes.model.RecipeUiModel
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun RecipeDetailsScreen(
-    recipe: RecipeDto,
+    recipe: RecipeUiModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current

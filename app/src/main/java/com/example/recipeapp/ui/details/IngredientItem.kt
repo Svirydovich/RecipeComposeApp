@@ -19,7 +19,10 @@ fun IngredientItem(ingredient: IngredientUiModel, modifier: Modifier = Modifier)
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = Dimens.Padding.PaddingMedium, horizontal = Dimens.Padding.PaddingMain)
+            .padding(
+                vertical = Dimens.Padding.PaddingMedium,
+                horizontal = Dimens.Padding.PaddingMain
+            )
     ) {
         Text(
             text = ingredient.name,
