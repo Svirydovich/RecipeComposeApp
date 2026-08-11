@@ -14,7 +14,8 @@ data class RecipeUiModel(
     val imageUrl: String,
     val ingredients: List<IngredientUiModel>,
     val method: List<String>,
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    val servings: Int
 ) : Parcelable
 
 fun RecipeDto.toUiModel() = RecipeUiModel(
@@ -25,5 +26,6 @@ fun RecipeDto.toUiModel() = RecipeUiModel(
     else "${Constants.ASSETS_URI_PREFIX}$imageUrl",
     ingredients = ingredients.map { it.toUiModel() },
     method = method.map { it.replaceFirst(Regex("^\\d+\\.\\s*"), "") },
-    isFavorite = false
+    isFavorite = false,
+    servings = servings
 )

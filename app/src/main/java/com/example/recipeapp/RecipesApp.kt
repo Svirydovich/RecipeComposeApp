@@ -18,7 +18,7 @@ import com.example.recipeapp.data.repository.getRecipeById
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
 import com.example.recipeapp.ui.categories.CategoriesScreen
-import com.example.recipeapp.ui.details.RecipeDetailsScreen
+import com.example.recipeapp.ui.details.RecipeDetailsRoute
 import com.example.recipeapp.ui.favorites.FavoritesScreen
 import com.example.recipeapp.ui.recipes.RecipesScreen
 import com.example.recipeapp.ui.recipes.model.toUiModel
@@ -132,7 +132,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                     val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
                     val recipe = getRecipeById(recipeId)?.toUiModel()
 
-                    if (recipe != null) RecipeDetailsScreen(recipe = recipe)
+                    if (recipe != null) RecipeDetailsRoute(recipe = recipe)
                     else Text("Рецепт не найден")
                 }
             }
