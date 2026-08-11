@@ -3,6 +3,8 @@ package com.example.recipeapp.data.repository
 import com.example.recipeapp.data.model.CategoryDto
 import com.example.recipeapp.data.model.IngredientDto
 import com.example.recipeapp.data.model.RecipeDto
+import com.example.recipeapp.ui.recipes.model.IngredientUiModel
+import java.math.RoundingMode
 
 private val categories = listOf(
     CategoryDto(0, "Бургеры", "Рецепты всех популярных видов бургеров", "burger.png"),
@@ -35,7 +37,8 @@ private val burgerRecipes = listOf(
             "4. Смазать нижние половинки булочек горчицей и кетчупом, затем положите лист салата, котлету, кольца помидора и закройте верхней половинкой булочки.",
             "5. Подавайте бургеры горячими с картофельными чипсами или картофельным пюре."
         ),
-        "burger-hamburger.png"
+        "burger-hamburger.png",
+        4
     ),
     RecipeDto(
         1,
@@ -55,7 +58,8 @@ private val burgerRecipes = listOf(
             "4. Соберите бургер: булочка, майонез, котлета с сыром, бекон, помидор, кетчуп.",
             "5. Подавайте горячими."
         ),
-        "burger-bacon.png"
+        "burger-bacon.png",
+        4
     )
 )
 
@@ -95,3 +99,14 @@ private val allRecipesById: Map<Int, RecipeDto> by lazy {
 fun getRecipeById(recipeId: Int): RecipeDto? {
     return allRecipesById[recipeId]
 }
+
+fun adjustIngredient(ingredient: IngredientUiModel, multiplier: Float): IngredientUiModel {
+    val originalQuantity = ingredient.quantity.toFloatOrNull()
+    return if (originalQuantity != null) ingredient.copy(quantity = (originalQuantity * multiplier).formatIngredientAmount())
+    else ingredient
+}
+
+fun Float.formatIngredientAmount(): String = this.toBigDecimal()
+    .setScale(2, RoundingMode.HALF_UP)
+    .stripTrailingZeros()
+    .toPlainString()
