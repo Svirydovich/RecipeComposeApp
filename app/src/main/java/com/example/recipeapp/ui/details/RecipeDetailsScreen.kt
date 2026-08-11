@@ -58,7 +58,7 @@ fun RecipeDetailsScreen(
 
     var sliderValue by remember(currentPortions) { mutableFloatStateOf(currentPortions.toFloat()) }
 
-    val adjustedIngredients = remember(recipe.ingredients, currentPortions) {
+    val adjustedIngredients = remember(recipe.ingredients, currentPortions, recipe.servings) {
         val multiplier = currentPortions.toFloat() / recipe.servings.toFloat()
         recipe.ingredients.map { adjustIngredient(it, multiplier) }
     }
