@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.recipeapp.core.ui.ScreenHeader
+import com.example.recipeapp.core.util.FavoritePrefsManager
 import com.example.recipeapp.core.util.shareRecipe
 import com.example.recipeapp.data.repository.adjustIngredient
 import com.example.recipeapp.ui.recipes.model.RecipeUiModel
@@ -31,14 +32,26 @@ import com.example.recipeapp.ui.theme.Dimens
 import kotlin.math.roundToInt
 
 @Composable
-fun RecipeDetailsRoute(recipe: RecipeUiModel, modifier: Modifier = Modifier) {
-    var isFavorite by rememberSaveable { mutableStateOf(false) }
+fun RecipeDetailsRoute(
+    recipe: RecipeUiModel,
+    favoritesManager: FavoritePrefsManager,
+    modifier: Modifier = Modifier
+) {
     var currentPortions by rememberSaveable { mutableIntStateOf(recipe.servings) }
+    var isFavorite by remember(recipe.id) {
+        mutableStateOf(favoritesManager.isFavorite(recipe.id))
+    }
+
+    val onFavoriteToggle = {
+        if (isFavorite) favoritesManager.removeFromFavorites(recipe.id)
+        else favoritesManager.addToFavorites(recipe.id)
+        isFavorite = !isFavorite
+    }
 
     RecipeDetailsScreen(
         recipe = recipe,
         isFavorite = isFavorite,
-        onFavoriteToggle = { isFavorite = !isFavorite },
+        onFavoriteToggle = onFavoriteToggle,
         currentPortions = currentPortions,
         onPortionsChange = { currentPortions = it },
         modifier = modifier
