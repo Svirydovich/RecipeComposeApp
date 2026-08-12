@@ -6,7 +6,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
+import com.example.recipeapp.core.util.FavoritePrefsManager
 import com.example.recipeapp.data.repository.getRecipeById
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
@@ -27,6 +30,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun RecipesApp(deepLinkIntent: Intent? = null) {
+    val context = LocalContext.current
+    val favoritesManager = remember { FavoritePrefsManager(context) }
+
     RecipeAppTheme {
         val navController = rememberNavController()
 
@@ -132,7 +138,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                     val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
                     val recipe = getRecipeById(recipeId)?.toUiModel()
 
-                    if (recipe != null) RecipeDetailsRoute(recipe = recipe)
+                    if (recipe != null) RecipeDetailsRoute(recipe, favoritesManager)
                     else Text("Рецепт не найден")
                 }
             }
