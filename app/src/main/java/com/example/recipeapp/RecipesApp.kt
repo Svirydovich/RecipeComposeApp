@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
-import com.example.recipeapp.core.util.FavoritePrefsManager
+import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.getRecipeById
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
@@ -31,7 +31,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun RecipesApp(deepLinkIntent: Intent? = null) {
     val context = LocalContext.current
-    val favoritesManager = remember { FavoritePrefsManager(context) }
+    val favoritesManager = remember { FavoriteDataStoreManager(context) }
 
     RecipeAppTheme {
         val navController = rememberNavController()
