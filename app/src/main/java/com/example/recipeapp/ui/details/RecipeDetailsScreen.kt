@@ -13,39 +13,47 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.core.util.FavoritePrefsManager
+import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.core.util.shareRecipe
 import com.example.recipeapp.data.repository.adjustIngredient
 import com.example.recipeapp.ui.recipes.model.RecipeUiModel
 import com.example.recipeapp.ui.theme.Dimens
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
 fun RecipeDetailsRoute(
     recipe: RecipeUiModel,
-    favoritesManager: FavoritePrefsManager,
+    favoritesManager: FavoriteDataStoreManager,
     modifier: Modifier = Modifier
 ) {
     var currentPortions by rememberSaveable { mutableIntStateOf(recipe.servings) }
-    var isFavorite by remember(recipe.id) {
-        mutableStateOf(favoritesManager.isFavorite(recipe.id))
+    var isFavorite by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(recipe.id) {
+        isFavorite = favoritesManager.isFavorite(recipe.id)
     }
 
-    val onFavoriteToggle = {
-        if (isFavorite) favoritesManager.removeFromFavorites(recipe.id)
-        else favoritesManager.addToFavorites(recipe.id)
-        isFavorite = !isFavorite
+    val onFavoriteToggle: () -> Unit = {
+        coroutineScope.launch {
+            if (isFavorite) favoritesManager.removeFavorite(recipe.id)
+            else favoritesManager.addFavorite(recipe.id)
+            isFavorite = !isFavorite
+        }
     }
 
     RecipeDetailsScreen(
