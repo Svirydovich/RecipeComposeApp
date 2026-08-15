@@ -13,11 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,18 +40,15 @@ fun RecipeDetailsRoute(
     modifier: Modifier = Modifier
 ) {
     var currentPortions by rememberSaveable { mutableIntStateOf(recipe.servings) }
-    var isFavorite by remember { mutableStateOf(false) }
+    val isFavorite by favoritesManager
+        .isFavoriteFlow(recipe.id)
+        .collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(recipe.id) {
-        isFavorite = favoritesManager.isFavorite(recipe.id)
-    }
 
     val onFavoriteToggle: () -> Unit = {
         coroutineScope.launch {
             if (isFavorite) favoritesManager.removeFavorite(recipe.id)
             else favoritesManager.addFavorite(recipe.id)
-            isFavorite = !isFavorite
         }
     }
 
