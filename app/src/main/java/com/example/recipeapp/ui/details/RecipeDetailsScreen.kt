@@ -40,9 +40,10 @@ fun RecipeDetailsRoute(
     modifier: Modifier = Modifier
 ) {
     var currentPortions by rememberSaveable { mutableIntStateOf(recipe.servings) }
-    val isFavorite by favoritesManager
-        .isFavoriteFlow(recipe.id)
-        .collectAsState(initial = false)
+    val isFavorite by remember(recipe.id) {
+        favoritesManager.isFavoriteFlow(recipe.id)
+    }.collectAsState(initial = false)
+
     val coroutineScope = rememberCoroutineScope()
 
     val onFavoriteToggle: () -> Unit = {
