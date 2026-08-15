@@ -6,6 +6,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +37,9 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
 
     RecipeAppTheme {
         val navController = rememberNavController()
+        val favoriteCount by remember(favoritesManager) {
+            favoritesManager.getFavoriteCountFlow()
+        }.collectAsState(initial = 0)
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -78,7 +83,8 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    favoriteCount = favoriteCount
                 )
             }
         ) { paddingValues ->

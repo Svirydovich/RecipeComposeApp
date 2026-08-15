@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +16,11 @@ import androidx.compose.ui.Modifier
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
-fun BottomNavigation(onCategoriesClick: () -> Unit, onFavoriteClick: () -> Unit) {
+fun BottomNavigation(
+    onCategoriesClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    favoriteCount: Int
+) {
     Row(
         modifier = Modifier
             .navigationBarsPadding()
@@ -38,6 +43,9 @@ fun BottomNavigation(onCategoriesClick: () -> Unit, onFavoriteClick: () -> Unit)
             shape = RoundedCornerShape(Dimens.Padding.PaddingMedium)
         ) {
             Text("Избранное")
+            if (favoriteCount > 0) {
+                Badge { Text("$favoriteCount") }
+            }
         }
     }
 }
