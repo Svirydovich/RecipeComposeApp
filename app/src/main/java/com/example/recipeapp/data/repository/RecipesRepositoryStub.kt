@@ -96,7 +96,7 @@ private val allRecipesById: Map<Int, RecipeDto> by lazy {
     ).flatten().associateBy { it.id }
 }
 
-fun getRecipeById(recipeId: Int): RecipeDto? {
+fun getRecipeByIdStub(recipeId: Int): RecipeDto? {
     return allRecipesById[recipeId]
 }
 
