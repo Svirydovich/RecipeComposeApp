@@ -19,13 +19,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
-import com.example.recipeapp.data.repository.getRecipeById
+import com.example.recipeapp.data.repository.getRecipeByIdStub
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
 import com.example.recipeapp.ui.categories.CategoriesScreen
 import com.example.recipeapp.ui.details.RecipeDetailsRoute
 import com.example.recipeapp.ui.favorites.FavoritesScreen
 import com.example.recipeapp.ui.recipes.RecipesScreen
+import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.ui.recipes.model.toUiModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 import kotlinx.coroutines.delay
@@ -108,7 +109,16 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                 }
 
                 composable(Destination.Favorites.route) {
-                    FavoritesScreen(Modifier)
+                    FavoritesScreen(
+                        repository = RecipesRepository(),
+                        favoritesManager = favoritesManager,
+                        onRecipeClick = { recipeId ->
+                            navController.navigate(
+                                Destination.Details.createRoute(
+                                    recipeId
+                                )
+                            )
+                        })
                 }
 
                 composable(
@@ -142,7 +152,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                     )
                 ) { backStackEntry ->
                     val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
-                    val recipe = getRecipeById(recipeId)?.toUiModel()
+                    val recipe = getRecipeByIdStub(recipeId)?.toUiModel()
 
                     if (recipe != null) RecipeDetailsRoute(recipe, favoritesManager)
                     else Text("Рецепт не найден")
