@@ -22,12 +22,12 @@ import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.getRecipeByIdStub
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
-import com.example.recipeapp.ui.categories.CategoriesScreen
-import com.example.recipeapp.ui.details.RecipeDetailsRoute
-import com.example.recipeapp.ui.favorites.FavoritesScreen
-import com.example.recipeapp.ui.recipes.RecipesScreen
+import com.example.recipeapp.features.categories.ui.CategoriesScreen
+import com.example.recipeapp.features.details.ui.RecipeDetailsRoute
+import com.example.recipeapp.features.favorites.ui.FavoritesScreen
+import com.example.recipeapp.features.recipes.ui.RecipesScreen
 import com.example.recipeapp.data.repository.RecipesRepository
-import com.example.recipeapp.ui.recipes.model.toUiModel
+import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 import kotlinx.coroutines.delay
 

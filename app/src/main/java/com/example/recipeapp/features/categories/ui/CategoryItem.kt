@@ -1,4 +1,4 @@
-package com.example.recipeapp.ui.categories
+package com.example.recipeapp.features.categories.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,7 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.recipeapp.R
-import com.example.recipeapp.ui.categories.model.CategoryUiModel
+import com.example.recipeapp.features.categories.presentation.model.CategoryUiModel
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.recipeapp.ui.recipes
+package com.example.recipeapp.features.recipes.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.data.repository.getRecipesByCategoryId
-import com.example.recipeapp.ui.recipes.model.RecipeUiModel
-import com.example.recipeapp.ui.recipes.model.toUiModel
+import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
+import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable

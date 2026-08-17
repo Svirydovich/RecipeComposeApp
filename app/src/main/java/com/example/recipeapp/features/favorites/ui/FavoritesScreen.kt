@@ -1,4 +1,4 @@
-package com.example.recipeapp.ui.favorites
+package com.example.recipeapp.features.favorites.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +17,8 @@ import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
-import com.example.recipeapp.ui.recipes.RecipeItem
-import com.example.recipeapp.ui.recipes.model.toUiModel
+import com.example.recipeapp.features.recipes.ui.RecipeItem
+import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.map
 import com.example.recipeapp.ui.theme.Dimens
 
