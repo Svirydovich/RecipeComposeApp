@@ -29,7 +29,6 @@ import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.core.util.shareRecipe
 import com.example.recipeapp.data.repository.adjustIngredient
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
-import com.example.recipeapp.ui.details.IngredientItem
 import com.example.recipeapp.ui.theme.Dimens
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
