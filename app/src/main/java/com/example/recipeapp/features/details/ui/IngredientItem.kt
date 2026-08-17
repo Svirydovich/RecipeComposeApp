@@ -1,4 +1,4 @@
-package com.example.recipeapp.ui.details
+package com.example.recipeapp.features.details.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.recipeapp.ui.recipes.model.IngredientUiModel
+import com.example.recipeapp.features.recipes.presentation.model.IngredientUiModel
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable

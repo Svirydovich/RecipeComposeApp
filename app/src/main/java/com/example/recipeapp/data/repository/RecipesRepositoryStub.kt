@@ -3,7 +3,7 @@ package com.example.recipeapp.data.repository
 import com.example.recipeapp.data.model.CategoryDto
 import com.example.recipeapp.data.model.IngredientDto
 import com.example.recipeapp.data.model.RecipeDto
-import com.example.recipeapp.ui.recipes.model.IngredientUiModel
+import com.example.recipeapp.features.recipes.presentation.model.IngredientUiModel
 import java.math.RoundingMode
 
 private val categories = listOf(
