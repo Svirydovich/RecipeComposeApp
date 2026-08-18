@@ -8,19 +8,21 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.data.repository.getCategories
-import com.example.recipeapp.features.categories.presentation.model.toUiModel
+import com.example.recipeapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun CategoriesScreen(modifier: Modifier = Modifier, onCategoryClick: (Int, String) -> Unit) {
-    val categories = remember {
-        getCategories().map { it.toUiModel() }
-    }
+    val viewModel: CategoriesViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val categories = uiState.categories
+
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
             imageModel = R.drawable.ic_launcher_background,
