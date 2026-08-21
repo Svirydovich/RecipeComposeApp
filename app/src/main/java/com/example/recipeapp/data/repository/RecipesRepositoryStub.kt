@@ -73,7 +73,7 @@ fun getCategories(): List<CategoryDto> {
     return categories
 }
 
-fun getRecipesByCategoryId(categoryId: Int): List<RecipeDto> {
+fun getRecipesByCategoryIdStub(categoryId: Int): List<RecipeDto> {
     return when (categoryId) {
         0 -> burgerRecipes
         1 -> dessertRecipes
