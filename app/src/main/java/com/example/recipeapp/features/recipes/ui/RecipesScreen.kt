@@ -7,64 +7,54 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.data.repository.getRecipesByCategoryId
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
-import com.example.recipeapp.features.recipes.presentation.model.toUiModel
+import com.example.recipeapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun RecipesScreen(
-    modifier: Modifier = Modifier,
-    categoryId: Int?,
-    categoryTitle: String = "",
-    onRecipeClick: (Int, RecipeUiModel) -> Unit = { _, _ -> }
+    uiState: RecipesUiState,
+    onRecipeClick: (RecipeUiModel) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-
-    LaunchedEffect(categoryId) {
-        categoryId?.let { safeId ->
-            isLoading = true
-            try {
-                recipes = getRecipesByCategoryId(safeId).map { it.toUiModel() }
-            } finally {
-                isLoading = false
-            }
-        }
-    }
-
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
-            imageModel = R.drawable.bcg_recipes_list,
+            imageModel = uiState.categoryImageUrl.takeIf { it.isNotEmpty() }
+                ?: R.drawable.bcg_recipes_list,
             contentDescription = "Фоновое изображение списка рецептов",
-            title = categoryTitle
+            title = uiState.categoryTitle
         )
 
-        Box(modifier = Modifier.weight(1f)) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LazyColumn {
-                    items(recipes, key = { it.id }) { recipe ->
-                        RecipeItem(
-                            recipe = recipe,
-                            onRecipeClick = { onRecipeClick(recipe.id, recipe) },
-                            modifier = Modifier.padding(
-                                horizontal = Dimens.Padding.PaddingMain,
-                                vertical = Dimens.Padding.PaddingMedium
-                            )
+        when {
+            uiState.isInitialLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            uiState.hasError -> Text(uiState.error.orEmpty())
+            uiState.isEmpty -> Text("В этой категории пока нет рецептов")
+            else -> LazyColumn {
+                items(uiState.recipes, key = { it.id }) { recipe ->
+                    RecipeItem(
+                        recipe = recipe,
+                        onRecipeClick = { onRecipeClick(recipe) },
+                        modifier = Modifier.padding(
+                            horizontal = Dimens.Padding.PaddingMain,
+                            vertical = Dimens.Padding.PaddingMedium
                         )
-                    }
+                    )
                 }
             }
         }

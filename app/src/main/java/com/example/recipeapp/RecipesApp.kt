@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,6 +28,7 @@ import com.example.recipeapp.features.details.ui.RecipeDetailsRoute
 import com.example.recipeapp.features.favorites.ui.FavoritesScreen
 import com.example.recipeapp.features.recipes.ui.RecipesScreen
 import com.example.recipeapp.data.repository.RecipesRepository
+import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 import kotlinx.coroutines.delay
@@ -129,20 +131,21 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                         navArgument(Destination.CATEGORY_TITLE_ARG) {
                             type = NavType.StringType
                             defaultValue = ""
+                        },
+                        navArgument(Destination.CATEGORY_IMAGE_ARG) {
+                            type = NavType.StringType
+                            defaultValue = ""
                         }
                     )
-                ) { backStackEntry ->
-                    val categoryId =
-                        backStackEntry.arguments?.getInt(Destination.CATEGORY_ID_ARG) ?: -1
-                    val categoryTitle =
-                        backStackEntry.arguments?.getString(Destination.CATEGORY_TITLE_ARG) ?: ""
+                ) {
+                    val recipesViewModel: RecipesViewModel = viewModel()
+                    val uiState by recipesViewModel.uiState.collectAsState()
                     RecipesScreen(
                         modifier = Modifier,
-                        categoryId = categoryId,
-                        categoryTitle = categoryTitle,
-                        onRecipeClick = { recipeId, recipe ->
-                            navController.navigate(Destination.Details.createRoute(recipeId))
-                        }
+                        onRecipeClick = { recipe ->
+                            navController.navigate(Destination.Details.createRoute(recipe.id))
+                        },
+                        uiState = uiState
                     )
                 }
 
