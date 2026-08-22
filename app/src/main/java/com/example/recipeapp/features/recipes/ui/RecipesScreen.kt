@@ -25,7 +25,8 @@ fun RecipesScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
-            imageModel = uiState.categoryImageUrl.ifEmpty { R.drawable.bcg_recipes_list },
+            imageModel = uiState.categoryImageUrl.takeIf { it.isNotEmpty() }
+                ?: R.drawable.bcg_recipes_list,
             contentDescription = "Фоновое изображение списка рецептов",
             title = uiState.categoryTitle
         )
@@ -33,7 +34,9 @@ fun RecipesScreen(
         when {
             uiState.isInitialLoading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
