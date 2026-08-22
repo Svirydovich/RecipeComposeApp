@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
 import kotlin.coroutines.cancellation.CancellationException
 
 class RecipesViewModel(
@@ -30,13 +31,18 @@ class RecipesViewModel(
         }
         val decodedTitle =
             Uri.decode(savedStateHandle[Destination.CATEGORY_TITLE_ARG] ?: "")
-        val decodedImageUrl = Uri.decode(savedStateHandle[Destination.CATEGORY_IMAGE_ARG] ?: "")
+        val decodedImageUrl =
+            URLDecoder.decode(savedStateHandle[Destination.CATEGORY_IMAGE_ARG] ?: "", "UTF-8")
 
         _uiState.update { current ->
             current.copy(
                 categoryTitle = decodedTitle,
                 categoryImageUrl = decodedImageUrl.let {
-                    if (it.startsWith("http")) it else "${Constants.ASSETS_URI_PREFIX}$it"
+                    when {
+                        it.isEmpty() -> it
+                        it.startsWith("http") -> it
+                        else -> "${Constants.ASSETS_URI_PREFIX}$it"
+                    }
                 }
             )
         }
