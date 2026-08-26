@@ -1,6 +1,7 @@
 package com.example.recipeapp.features.details.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,78 +9,84 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.core.util.shareRecipe
-import com.example.recipeapp.data.repository.adjustIngredient
+import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModel
+import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModelFactory
+import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUiState
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.ui.theme.Dimens
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
 fun RecipeDetailsRoute(
     recipe: RecipeUiModel,
-    favoritesManager: FavoriteDataStoreManager,
     modifier: Modifier = Modifier
 ) {
-    var currentPortions by rememberSaveable { mutableIntStateOf(recipe.servings) }
-    val isFavorite by remember(recipe.id) {
-        favoritesManager.isFavoriteFlow(recipe.id)
-    }.collectAsState(initial = false)
+    val viewModel: RecipeDetailsViewModel = viewModel(factory = RecipeDetailsViewModelFactory)
+    LaunchedEffect(recipe.id) { viewModel.initializeWithRecipe(recipe) }
 
-    val coroutineScope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsState()
 
-    val onFavoriteToggle: () -> Unit = {
-        coroutineScope.launch {
-            if (isFavorite) favoritesManager.removeFavorite(recipe.id)
-            else favoritesManager.addFavorite(recipe.id)
+    when {
+        uiState.isLoading || uiState.error != null -> {
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(
+                        text = uiState.error ?: "Неизвестная ошибка",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
+
+        uiState.recipe == null -> {
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Данные рецепта отсутствуют")
+            }
+        }
+
+        else -> {
+            RecipeDetailsScreen(
+                state = uiState,
+                onFavoriteToggle = { viewModel.toggleFavorite() },
+                onPortionsChange = { viewModel.updatePortions(it) },
+                modifier = modifier
+            )
         }
     }
-
-    RecipeDetailsScreen(
-        recipe = recipe,
-        isFavorite = isFavorite,
-        onFavoriteToggle = onFavoriteToggle,
-        currentPortions = currentPortions,
-        onPortionsChange = { currentPortions = it },
-        modifier = modifier
-    )
 }
 
 @Composable
 fun RecipeDetailsScreen(
-    recipe: RecipeUiModel,
-    isFavorite: Boolean,
+    state: RecipeDetailsUiState,
     onFavoriteToggle: () -> Unit,
-    currentPortions: Int,
     onPortionsChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val recipe = state.recipe ?: return
     val context = LocalContext.current
 
-    var sliderValue by remember(currentPortions) { mutableFloatStateOf(currentPortions.toFloat()) }
-
-    val adjustedIngredients = remember(recipe.ingredients, currentPortions, recipe.servings) {
-        val multiplier = currentPortions.toFloat() / recipe.servings.toFloat()
-        recipe.ingredients.map { adjustIngredient(it, multiplier) }
-    }
+    var sliderValue by remember(state.portions) { mutableFloatStateOf(state.portions.toFloat()) }
 
     Column(
         modifier = modifier
@@ -93,7 +100,7 @@ fun RecipeDetailsScreen(
             showShareButton = true,
             onShareClick = { shareRecipe(context, recipe.id, recipe.title) },
             showFavoriteButton = true,
-            isFavorite = isFavorite,
+            isFavorite = state.isFavorite,
             onFavoriteToggle = onFavoriteToggle
         )
 
@@ -105,7 +112,7 @@ fun RecipeDetailsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Порции: $currentPortions",
+                text = "Порции: ${state.portions}",
                 style = MaterialTheme.typography.bodyLarge
             )
 
@@ -116,7 +123,7 @@ fun RecipeDetailsScreen(
                 },
                 onValueChangeFinished = {
                     val rounded = sliderValue.roundToInt().coerceIn(1, recipe.servings * 3)
-                    if (rounded != currentPortions) {
+                    if (rounded != state.portions) {
                         onPortionsChange(rounded)
                     }
                 },
@@ -125,9 +132,10 @@ fun RecipeDetailsScreen(
             )
         }
 
-        adjustedIngredients.forEachIndexed { index, ingredient ->
+        val scaledIngredients = state.scaledIngredients
+        scaledIngredients.forEachIndexed { index, ingredient ->
             IngredientItem(ingredient = ingredient)
-            if (index < adjustedIngredients.lastIndex) {
+            if (index < scaledIngredients.lastIndex) {
                 HorizontalDivider()
             }
         }
