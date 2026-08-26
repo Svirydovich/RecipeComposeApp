@@ -8,9 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -19,12 +17,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
-import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.getRecipeByIdStub
 import com.example.recipeapp.features.categories.ui.CategoriesScreen
 import com.example.recipeapp.features.details.ui.RecipeDetailsRoute
 import com.example.recipeapp.features.favorites.ui.FavoritesRoute
 import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
+import com.example.recipeapp.features.recipes.presentation.RecipesViewModelFactory
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import com.example.recipeapp.features.recipes.ui.RecipesScreen
 import com.example.recipeapp.navigation.Destination
@@ -34,14 +32,11 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun RecipesApp(deepLinkIntent: Intent? = null) {
-    val context = LocalContext.current
-    val favoritesManager = remember { FavoriteDataStoreManager(context) }
+    val mainViewModel: MainViewModel = viewModel(factory = MainViewModelFactory)
+    val favoriteCount by mainViewModel.favoriteCount.collectAsState()
 
     RecipeAppTheme {
         val navController = rememberNavController()
-        val favoriteCount by remember(favoritesManager) {
-            favoritesManager.getFavoriteCountFlow()
-        }.collectAsState(initial = 0)
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -130,7 +125,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                         }
                     )
                 ) {
-                    val recipesViewModel: RecipesViewModel = viewModel()
+                    val recipesViewModel: RecipesViewModel = viewModel(factory = RecipesViewModelFactory())
                     val uiState by recipesViewModel.uiState.collectAsState()
                     RecipesScreen(
                         modifier = Modifier,

@@ -87,33 +87,19 @@ fun FavoritesScreen(
             }
 
             is FavoritesUiState.Success -> {
-                val favoriteRecipes = uiState.recipes
-
-                if (favoriteRecipes.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
-                            .padding(Dimens.Padding.PaddingMain),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "В избранном пока пусто")
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.weight(1f)) {
-                        items(
-                            items = favoriteRecipes,
-                            key = { it.id }
-                        ) { recipe ->
-                            RecipeItem(
-                                recipe = recipe,
-                                onRecipeClick = onRecipeClick,
-                                modifier = Modifier.padding(
-                                    horizontal = Dimens.Padding.PaddingMain,
-                                    vertical = Dimens.Padding.PaddingMedium
-                                )
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(
+                        items = uiState.recipes,
+                        key = { it.id }
+                    ) { recipe ->
+                        RecipeItem(
+                            recipe = recipe,
+                            onRecipeClick = onRecipeClick,
+                            modifier = Modifier.padding(
+                                horizontal = Dimens.Padding.PaddingMain,
+                                vertical = Dimens.Padding.PaddingMedium
                             )
-                        }
+                        )
                     }
                 }
             }
