@@ -4,7 +4,7 @@ import com.example.recipeapp.data.model.CategoryDto
 import com.example.recipeapp.data.model.IngredientDto
 import com.example.recipeapp.data.model.RecipeDto
 import com.example.recipeapp.features.recipes.presentation.model.IngredientUiModel
-import java.math.RoundingMode
+import com.example.recipeapp.features.recipes.presentation.model.formatIngredientAmount
 
 private val categories = listOf(
     CategoryDto(0, "Бургеры", "Рецепты всех популярных видов бургеров", "burger.png"),
@@ -99,14 +99,3 @@ private val allRecipesById: Map<Int, RecipeDto> by lazy {
 fun getRecipeByIdStub(recipeId: Int): RecipeDto? {
     return allRecipesById[recipeId]
 }
-
-fun adjustIngredient(ingredient: IngredientUiModel, multiplier: Float): IngredientUiModel {
-    val originalQuantity = ingredient.quantity.toFloatOrNull()
-    return if (originalQuantity != null) ingredient.copy(quantity = (originalQuantity * multiplier).formatIngredientAmount())
-    else ingredient
-}
-
-fun Float.formatIngredientAmount(): String = this.toBigDecimal()
-    .setScale(2, RoundingMode.HALF_UP)
-    .stripTrailingZeros()
-    .toPlainString()
