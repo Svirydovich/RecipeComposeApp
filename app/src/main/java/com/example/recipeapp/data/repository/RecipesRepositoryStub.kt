@@ -3,8 +3,6 @@ package com.example.recipeapp.data.repository
 import com.example.recipeapp.data.model.CategoryDto
 import com.example.recipeapp.data.model.IngredientDto
 import com.example.recipeapp.data.model.RecipeDto
-import com.example.recipeapp.features.recipes.presentation.model.IngredientUiModel
-import com.example.recipeapp.features.recipes.presentation.model.formatIngredientAmount
 
 private val categories = listOf(
     CategoryDto(0, "Бургеры", "Рецепты всех популярных видов бургеров", "burger.png"),

@@ -19,16 +19,14 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class RecipesViewModel(
     savedStateHandle: SavedStateHandle,
-    private val repository: RecipesRepository = RecipesRepository()
+    private val repository: RecipesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RecipesUiState(isLoading = true))
     val uiState: StateFlow<RecipesUiState> = _uiState.asStateFlow()
 
     init {
-        val categoryId: Int = requireNotNull(savedStateHandle[Destination.CATEGORY_ID_ARG]) {
-            "Ошибка навигации: ${Destination.CATEGORY_ID_ARG} требуется для экрана рецептов"
-        }
+        val categoryId: Int = savedStateHandle[Destination.CATEGORY_ID_ARG] ?: -1
         val decodedTitle =
             Uri.decode(savedStateHandle[Destination.CATEGORY_TITLE_ARG] ?: "")
         val decodedImageUrl =
@@ -74,4 +72,3 @@ class RecipesViewModel(
         }
     }
 }
-

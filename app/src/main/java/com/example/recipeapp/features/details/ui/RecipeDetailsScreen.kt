@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -30,17 +29,14 @@ import com.example.recipeapp.core.util.shareRecipe
 import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModelFactory
 import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUiState
-import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.ui.theme.Dimens
 import kotlin.math.roundToInt
 
 @Composable
 fun RecipeDetailsRoute(
-    recipe: RecipeUiModel,
     modifier: Modifier = Modifier
 ) {
     val viewModel: RecipeDetailsViewModel = viewModel(factory = RecipeDetailsViewModelFactory)
-    LaunchedEffect(recipe.id) { viewModel.initializeWithRecipe(recipe) }
 
     val uiState by viewModel.uiState.collectAsState()
 
