@@ -19,7 +19,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class RecipesViewModel(
     savedStateHandle: SavedStateHandle,
-    private val repository: RecipesRepository = RecipesRepository()
+    private val repository: RecipesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RecipesUiState(isLoading = true))
@@ -74,4 +74,3 @@ class RecipesViewModel(
         }
     }
 }
-

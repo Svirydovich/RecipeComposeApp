@@ -3,7 +3,6 @@ package com.example.recipeapp
 import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,13 +16,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
-import com.example.recipeapp.data.repository.getRecipeByIdStub
 import com.example.recipeapp.features.categories.ui.CategoriesScreen
 import com.example.recipeapp.features.details.ui.RecipeDetailsRoute
 import com.example.recipeapp.features.favorites.ui.FavoritesRoute
 import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipeapp.features.recipes.presentation.RecipesViewModelFactory
-import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import com.example.recipeapp.features.recipes.ui.RecipesScreen
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
@@ -141,13 +138,16 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                     arguments = listOf(
                         navArgument(Destination.RECIPE_ID_ARG) { type = NavType.IntType }
                     )
-                ) { backStackEntry ->
-                    val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
-                    val recipe = getRecipeByIdStub(recipeId)?.toUiModel()
-
-                    if (recipe != null) RecipeDetailsRoute(recipe)
-                    else Text("Рецепт не найден")
+                ) {
+                    RecipeDetailsRoute()
                 }
+//                { backStackEntry ->
+//                    val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
+//                    val recipe = getRecipeByIdStub(recipeId)?.toUiModel()
+//
+//                    if (recipe != null) RecipeDetailsRoute(recipe)
+//                    else Text("Рецепт не найден")
+//                }
             }
         }
     }

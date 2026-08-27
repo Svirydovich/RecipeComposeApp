@@ -60,13 +60,15 @@ object FavoritesViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         val application =
             checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+        val favoriteManager = FavoriteDataStoreManager(application)
+        val repository = RecipesRepository(favoriteManager)
 
         return when {
             modelClass.isAssignableFrom(FavoritesViewModel::class.java) -> {
                 FavoritesViewModel(
                     application = application,
-                    repository = RecipesRepository(),
-                    favoriteManager = FavoriteDataStoreManager(application)
+                    repository = repository,
+                    favoriteManager = favoriteManager
                 ) as T
             }
 
