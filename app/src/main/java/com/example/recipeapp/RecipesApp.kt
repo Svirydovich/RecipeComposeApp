@@ -122,7 +122,8 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                         }
                     )
                 ) {
-                    val recipesViewModel: RecipesViewModel = viewModel(factory = RecipesViewModelFactory())
+                    val recipesViewModel: RecipesViewModel =
+                        viewModel(factory = RecipesViewModelFactory())
                     val uiState by recipesViewModel.uiState.collectAsState()
                     RecipesScreen(
                         modifier = Modifier,
@@ -141,13 +142,6 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                 ) {
                     RecipeDetailsRoute()
                 }
-//                { backStackEntry ->
-//                    val recipeId = backStackEntry.arguments?.getInt(Destination.RECIPE_ID_ARG) ?: 0
-//                    val recipe = getRecipeByIdStub(recipeId)?.toUiModel()
-//
-//                    if (recipe != null) RecipeDetailsRoute(recipe)
-//                    else Text("Рецепт не найден")
-//                }
             }
         }
     }

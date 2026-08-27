@@ -23,11 +23,14 @@ object MainViewModelFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         val application =
-            checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+            checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) {
+                "Application is required in extras for MainViewModelFactory"
+            }
         return when {
             modelClass.isAssignableFrom(MainViewModel::class.java) ->
                 MainViewModel(application) as T
-            else -> throw IllegalArgumentException("Unknown ViewModel class")
+
+            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
 }

@@ -26,9 +26,7 @@ class RecipesViewModel(
     val uiState: StateFlow<RecipesUiState> = _uiState.asStateFlow()
 
     init {
-        val categoryId: Int = requireNotNull(savedStateHandle[Destination.CATEGORY_ID_ARG]) {
-            "Ошибка навигации: ${Destination.CATEGORY_ID_ARG} требуется для экрана рецептов"
-        }
+        val categoryId: Int = savedStateHandle[Destination.CATEGORY_ID_ARG] ?: -1
         val decodedTitle =
             Uri.decode(savedStateHandle[Destination.CATEGORY_TITLE_ARG] ?: "")
         val decodedImageUrl =
