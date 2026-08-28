@@ -53,7 +53,8 @@ class MainActivity : ComponentActivity() {
                     val code = connection.responseCode
 
                     if (code in 200..299) {
-                        val jsonString = connection.inputStream.bufferedReader().readText()
+                        val jsonString =
+                            connection.inputStream.bufferedReader().use { it.readText() }
 
                         Log.i("MainActivity", "responseCode: ${connection.responseCode}")
                         Log.i("MainActivity", "responseMessage: ${connection.responseMessage}")
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             "Получено категорий: ${categories.size}: ${categories.joinToString(", ") { it.title }}"
                         )
                     } else {
-                        connection.errorStream?.bufferedReader()?.readText() ?: ""
+                        connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                         Log.i(
                             "MainActivity",
                             "Ошибка HTTP. Код: $code. Сообщение: ${connection.responseMessage}"
