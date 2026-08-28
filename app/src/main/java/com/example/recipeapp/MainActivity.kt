@@ -15,13 +15,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import com.example.recipeapp.data.model.CategoryDto
+import com.example.recipeapp.data.model.RecipeDto
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.serialization.json.Json
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
+    private val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +44,7 @@ class MainActivity : ComponentActivity() {
             "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}"
         )
 
-        val thread = Thread {
+        threadPool.execute {
             Log.i("MainActivity", "Выполняю запрос на потоке: ${Thread.currentThread().name}")
 
             try {
@@ -50,37 +54,71 @@ class MainActivity : ComponentActivity() {
                 try {
                     connection.connect()
 
-                    val code = connection.responseCode
+                    val jsonString = connection.inputStream.bufferedReader().readText()
 
-                    if (code in 200..299) {
-                        val jsonString =
-                            connection.inputStream.bufferedReader().use { it.readText() }
+                    Log.i("MainActivity", "responseCode: ${connection.responseCode}")
+                    Log.i("MainActivity", "responseMessage: ${connection.responseMessage}")
+                    Log.i("MainActivity", "Body: $jsonString")
 
-                        Log.i("MainActivity", "responseCode: ${connection.responseCode}")
-                        Log.i("MainActivity", "responseMessage: ${connection.responseMessage}")
-                        Log.i("MainActivity", "Body: $jsonString")
+                    val categories = Json.decodeFromString<List<CategoryDto>>(jsonString)
+                    Log.i("Pool", "Получено категорий: ${categories.size}")
 
-                        val categories = Json.decodeFromString<List<CategoryDto>>(jsonString)
-                        Log.i(
-                            "MainActivity",
-                            "Получено категорий: ${categories.size}: ${categories.joinToString(", ") { it.title }}"
-                        )
-                    } else {
-                        connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
-                        Log.i(
-                            "MainActivity",
-                            "Ошибка HTTP. Код: $code. Сообщение: ${connection.responseMessage}"
-                        )
+                    val categoryTitleById: Map<Int, String> =
+                        categories.associate { it.id to it.title }
+
+                    categoryTitleById.forEach { (categoryId, categoryTitle) ->
+                        threadPool.execute {
+                            Log.i(
+                                "Pool",
+                                "Запрос рецептов категории $categoryId на потоке: ${Thread.currentThread().name}"
+                            )
+
+                            try {
+                                val recipesUrl =
+                                    URL("https://recipes.androidsprint.ru/api/category/$categoryId/recipes")
+                                val recipesConnection =
+                                    recipesUrl.openConnection() as HttpURLConnection
+
+                                try {
+                                    recipesConnection.connect()
+
+                                    val recipesJson =
+                                        recipesConnection.inputStream.bufferedReader().readText()
+                                    val recipes: List<RecipeDto> =
+                                        Json.decodeFromString(recipesJson)
+
+                                    Log.i(
+                                        "Pool",
+                                        "Категория $categoryTitle ($categoryId): получено рецептов ${recipes.size}"
+                                    )
+                                } finally {
+                                    recipesConnection.disconnect()
+                                }
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "Pool",
+                                    "Ошибка при получении рецептов категории $categoryId",
+                                    e
+                                )
+                            }
+                        }
                     }
                 } finally {
                     connection.disconnect()
                 }
             } catch (e: Exception) {
-                Log.e("MainActivity", "Ошибка при выполнении запроса", e)
+                Log.e(
+                    "Pool",
+                    "Ошибка при выполнении запроса",
+                    e
+                )
             }
         }
+    }
 
-        thread.start()
+    override fun onDestroy() {
+        super.onDestroy()
+        threadPool.shutdown()
     }
 
     override fun onNewIntent(intent: Intent) {
