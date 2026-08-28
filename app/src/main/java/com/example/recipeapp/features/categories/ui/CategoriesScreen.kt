@@ -31,7 +31,7 @@ fun CategoriesScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
-            imageModel = R.drawable.ic_launcher_background,
+            imageModel = R.drawable.bcg_categories,
             contentDescription = "Фоновое изображение категории",
             title = "Категории"
         )
