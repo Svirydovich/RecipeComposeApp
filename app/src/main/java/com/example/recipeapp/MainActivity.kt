@@ -11,17 +11,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.navigation.findNavController
 import com.example.recipeapp.data.model.CategoryDto
+import com.example.recipeapp.data.model.RecipeDto
 import com.example.recipeapp.ui.theme.RecipeAppTheme
+import kotlinx.serialization.json.Json
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlinx.serialization.json.Json
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
+    private val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,19 +41,16 @@ class MainActivity : ComponentActivity() {
             "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}"
         )
 
-        val thread = Thread {
+        threadPool.execute {
             Log.i("MainActivity", "Выполняю запрос на потоке: ${Thread.currentThread().name}")
 
             try {
                 val url = URL("https://recipes.androidsprint.ru/api/category")
-                val connection = url.openConnection() as HttpURLConnection
+                val connection = url.openConnection() as? HttpURLConnection
+                if (connection != null) {
+                    try {
+                        connection.connect()
 
-                try {
-                    connection.connect()
-
-                    val code = connection.responseCode
-
-                    if (code in 200..299) {
                         val jsonString =
                             connection.inputStream.bufferedReader().use { it.readText() }
 
@@ -61,26 +59,78 @@ class MainActivity : ComponentActivity() {
                         Log.i("MainActivity", "Body: $jsonString")
 
                         val categories = Json.decodeFromString<List<CategoryDto>>(jsonString)
-                        Log.i(
-                            "MainActivity",
-                            "Получено категорий: ${categories.size}: ${categories.joinToString(", ") { it.title }}"
-                        )
-                    } else {
-                        connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
-                        Log.i(
-                            "MainActivity",
-                            "Ошибка HTTP. Код: $code. Сообщение: ${connection.responseMessage}"
-                        )
+                        Log.i("Pool", "Получено категорий: ${categories.size}")
+
+                        val categoryTitleById: Map<Int, String> =
+                            categories.associate { it.id to it.title }
+
+                        categoryTitleById.forEach { (categoryId, categoryTitle) ->
+                            threadPool.execute {
+                                Log.i(
+                                    "Pool",
+                                    "Запрос рецептов категории $categoryId на потоке: ${Thread.currentThread().name}"
+                                )
+
+                                try {
+                                    val recipesUrl =
+                                        URL("https://recipes.androidsprint.ru/api/category/$categoryId/recipes")
+                                    val recipesConnection =
+                                        recipesUrl.openConnection() as? HttpURLConnection
+                                    if (recipesConnection != null) {
+                                        try {
+                                            recipesConnection.connect()
+
+                                            val recipesJson =
+                                                recipesConnection.inputStream.bufferedReader()
+                                                    .use { it.readText() }
+                                            val recipes: List<RecipeDto> =
+                                                Json.decodeFromString(recipesJson)
+
+                                            Log.i(
+                                                "Pool",
+                                                "Категория $categoryTitle ($categoryId): получено рецептов ${recipes.size}"
+                                            )
+                                        } finally {
+                                            recipesConnection.disconnect()
+                                        }
+                                    } else {
+                                        Log.e(
+                                            "Pool",
+                                            "Неожиданный тип соединения для URL: $recipesUrl. Требуется HttpURLConnection"
+                                        )
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        "Pool",
+                                        "Ошибка при получении рецептов категории $categoryId",
+                                        e
+                                    )
+                                }
+                            }
+                        }
+                    } finally {
+                        connection.disconnect()
                     }
-                } finally {
-                    connection.disconnect()
+                } else {
+                    Log.e(
+                        "Pool",
+                        "Неожиданный тип соединения. Требуется HttpURLConnection"
+                    )
+
                 }
             } catch (e: Exception) {
-                Log.e("MainActivity", "Ошибка при выполнении запроса", e)
+                Log.e(
+                    "Pool",
+                    "Ошибка при выполнении запроса",
+                    e
+                )
             }
         }
+    }
 
-        thread.start()
+    override fun onDestroy() {
+        super.onDestroy()
+        threadPool.shutdown()
     }
 
     override fun onNewIntent(intent: Intent) {

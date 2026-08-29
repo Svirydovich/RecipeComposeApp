@@ -10,7 +10,8 @@ import com.example.recipeapp.data.repository.RecipesRepository
 class RecipesViewModelFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+        val application =
+            checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
         val savedStateHandle = extras.createSavedStateHandle()
 
         val favoriteManager = FavoriteDataStoreManager(application)
@@ -18,7 +19,7 @@ class RecipesViewModelFactory : ViewModelProvider.Factory {
 
         return when {
             modelClass.isAssignableFrom(RecipesViewModel::class.java) -> {
-                RecipesViewModel(savedStateHandle, repository) as T
+                modelClass.cast(RecipesViewModel(savedStateHandle, repository))
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class")

@@ -28,7 +28,7 @@ object MainViewModelFactory : ViewModelProvider.Factory {
             }
         return when {
             modelClass.isAssignableFrom(MainViewModel::class.java) ->
-                MainViewModel(application) as T
+                modelClass.cast(MainViewModel(application))
 
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
