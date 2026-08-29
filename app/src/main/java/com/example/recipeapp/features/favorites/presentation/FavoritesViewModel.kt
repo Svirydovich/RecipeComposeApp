@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.recipeapp.MainViewModel
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.favorites.presentation.model.FavoritesUiState
+import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -65,11 +67,13 @@ object FavoritesViewModelFactory : ViewModelProvider.Factory {
 
         return when {
             modelClass.isAssignableFrom(FavoritesViewModel::class.java) -> {
-                FavoritesViewModel(
-                    application = application,
-                    repository = repository,
-                    favoriteManager = favoriteManager
-                ) as T
+                modelClass.cast(
+                    FavoritesViewModel(
+                        application = application,
+                        repository = repository,
+                        favoriteManager = favoriteManager
+                    )
+                )
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class")

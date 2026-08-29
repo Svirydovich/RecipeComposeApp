@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipeapp.Constants
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
@@ -35,13 +34,7 @@ class RecipesViewModel(
         _uiState.update { current ->
             current.copy(
                 categoryTitle = decodedTitle,
-                categoryImageUrl = decodedImageUrl.let {
-                    when {
-                        it.isEmpty() -> it
-                        it.startsWith("http") -> it
-                        else -> "${Constants.ASSETS_URI_PREFIX}$it"
-                    }
-                }
+                categoryImageUrl = decodedImageUrl
             )
         }
 
