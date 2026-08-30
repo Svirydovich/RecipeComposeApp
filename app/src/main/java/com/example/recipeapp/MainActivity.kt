@@ -83,39 +83,46 @@ class MainActivity : ComponentActivity() {
                                 "MainActivity",
                                 "Выполняю запрос на потоке: ${Thread.currentThread().name}"
                             )
+                            try {
+                                okHttpClient.newCall(request).execute().use { response ->
+                                    if (!response.isSuccessful) {
+                                        Log.e(
+                                            "MainActivity",
+                                            "Ошибка загрузки рецепта. HTTP Code: ${response.code}"
+                                        )
+                                        return@use
+                                    }
 
-                            okHttpClient.newCall(request).execute().use { response ->
-                                if (!response.isSuccessful) {
-                                    Log.e(
-                                        "MainActivity",
-                                        "Ошибка загрузки рецепта. HTTP Code: ${response.code}"
+                                    val body = response.body?.string()
+                                    if (body.isNullOrBlank()) {
+                                        Log.e("MainActivity", "Тело ответа рецепта пустое.")
+                                        return@use
+                                    }
+                                    Log.i("MainActivity", "responseCode: ${response.code}")
+                                    Log.i("MainActivity", "responseMessage: ${response.message}")
+                                    Log.i("MainActivity", "Body: $body")
+
+                                    val recipes: List<RecipeDto> = runCatching {
+                                        Json.decodeFromString<List<RecipeDto>>(body)
+                                    }.getOrElse { error ->
+                                        Log.e(
+                                            "MainActivity",
+                                            "Не удалось распарсить JSON рецептов",
+                                            error
+                                        )
+                                        emptyList()
+                                    }
+
+                                    Log.i(
+                                        "Pool",
+                                        "Категория $categoryTitle ($categoryId) на потоке ${Thread.currentThread().name}: получено рецептов ${recipes.size}"
                                     )
-                                    return@use
                                 }
-
-                                val body = response.body?.string()
-                                if (body.isNullOrBlank()) {
-                                    Log.e("MainActivity", "Тело ответа рецепта пустое.")
-                                    return@use
-                                }
-                                Log.i("MainActivity", "responseCode: ${response.code}")
-                                Log.i("MainActivity", "responseMessage: ${response.message}")
-                                Log.i("MainActivity", "Body: $body")
-
-                                val recipes: List<RecipeDto> = runCatching {
-                                    Json.decodeFromString<List<RecipeDto>>(body)
-                                }.getOrElse { error ->
-                                    Log.e(
-                                        "MainActivity",
-                                        "Не удалось распарсить JSON рецептов",
-                                        error
-                                    )
-                                    emptyList()
-                                }
-
-                                Log.i(
-                                    "Pool",
-                                    "Категория $categoryTitle ($categoryId) на потоке ${Thread.currentThread().name}: получено рецептов ${recipes.size}"
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "MainActivity",
+                                    "Критическая ошибка в фоновом потоке загрузки данных",
+                                    e
                                 )
                             }
                         }
