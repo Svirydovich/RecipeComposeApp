@@ -24,6 +24,7 @@ import retrofit2.Retrofit
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
+import com.example.recipeapp.core.network.NetworkConfig
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
@@ -47,10 +48,10 @@ class MainActivity : ComponentActivity() {
         thread {
             val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://recipes.androidsprint.ru/api/")
+                .baseUrl(NetworkConfig.BASE_URL)
                 .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .build()
-            retrofit.create(RecipesApiService::class.java)
+            val service = retrofit.create(RecipesApiService::class.java)
 
             val request: Request = Request.Builder()
                 .url("https://recipes.androidsprint.ru/api/category")
