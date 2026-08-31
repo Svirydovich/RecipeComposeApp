@@ -11,15 +11,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.recipeapp.core.network.api.RecipesApiService
 import com.example.recipeapp.data.model.CategoryDto
 import com.example.recipeapp.data.model.RecipeDto
 import com.example.recipeapp.ui.theme.RecipeAppTheme
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import retrofit2.Retrofit
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
+import com.example.recipeapp.core.network.NetworkConfig
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
@@ -41,6 +46,13 @@ class MainActivity : ComponentActivity() {
 
 
         thread {
+            val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
+            val retrofit = Retrofit.Builder()
+                .baseUrl(NetworkConfig.BASE_URL)
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+                .build()
+            val service = retrofit.create(RecipesApiService::class.java)
+
             val request: Request = Request.Builder()
                 .url("https://recipes.androidsprint.ru/api/category")
                 .build()
