@@ -1,15 +1,15 @@
 package com.example.recipeapp.data.repository
 
 import com.example.recipeapp.data.model.CategoryDto
+import com.example.recipeapp.data.model.RecipeDto
 import kotlin.concurrent.thread
 
-class RecipesRepository {
-    suspend fun getCategories(): List<CategoryDto> {
-        thread {
-            val categories = apiService.getCategories()
+interface RecipesRepository {
+    suspend fun getCategories(): List<CategoryDto>
 
-        }
-    }
+    suspend fun getRecipesByCategory(categoryId: Int): List<RecipeDto>
+
+    suspend fun getRecipe(recipeId: Int): RecipeDto?
 }
 
 
