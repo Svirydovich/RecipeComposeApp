@@ -28,11 +28,34 @@ class RecipesRepositoryImpl(
     }
 
     override suspend fun getRecipesByCategory(categoryId: Int): List<RecipeDto> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getRecipesByCategory(categoryId).execute()
+                if (response.isSuccessful) {
+                    response.body()
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     override suspend fun getRecipe(recipeId: Int): RecipeDto? {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getRecipe(recipeId).execute()
+
+                if (response.isSuccessful) {
+                    response.body()
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 }
 
