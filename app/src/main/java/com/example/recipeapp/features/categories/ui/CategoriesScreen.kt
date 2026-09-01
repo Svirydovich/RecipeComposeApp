@@ -25,7 +25,7 @@ import com.example.recipeapp.ui.theme.Dimens
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
-    onCategoryClick: (Int, String, String) -> Unit
+    onCategoryClick: (Int, String, String) -> Unit,
 ) {
     val viewModel: CategoriesViewModel = remember {
         CategoriesViewModel(repository)

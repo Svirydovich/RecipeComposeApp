@@ -30,11 +30,11 @@ class RecipesRepositoryImpl(
     override suspend fun getRecipesByCategory(categoryId: Int): List<RecipeDto> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getRecipesByCategory(categoryId).execute()
+                val response = apiService.getRecipesByCategory(categoryId)
                 if (response.isSuccessful) {
                     response.body()
                 } else {
-                    null
+                    emptyList()
                 }
             } catch (e: Exception) {
                 null
@@ -45,7 +45,7 @@ class RecipesRepositoryImpl(
     override suspend fun getRecipe(recipeId: Int): RecipeDto? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getRecipe(recipeId).execute()
+                val response = apiService.getRecipe(recipeId)
 
                 if (response.isSuccessful) {
                     response.body()
