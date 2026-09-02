@@ -20,7 +20,7 @@ class RecipesRepositoryImpl(
                 throw e
             } catch (e: Exception) {
                 Log.e("RecipesRepository", "Ошибка при получении категорий", e)
-                emptyList()
+                throw e
             }
         }
     }
@@ -33,7 +33,7 @@ class RecipesRepositoryImpl(
                 throw e
             } catch (e: Exception) {
                 Log.e("RecipesRepository", "Ошибка при получении рецептов", e)
-                emptyList()
+                throw e
             }
         }
     }
@@ -46,7 +46,7 @@ class RecipesRepositoryImpl(
                 throw e
             } catch (e: Exception) {
                 Log.e("RecipesRepository", "Ошибка при получении рецепта", e)
-                throw Exception("Ошибка при получении рецепта", e)
+                throw e
             }
         }
     }
