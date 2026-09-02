@@ -128,11 +128,10 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
 
                 composable(Destination.Favorites.route) {
                     val context = LocalContext.current
-                    val favoritesViewModel: FavoritesViewModel = remember {
-                        FavoritesViewModel(
-                            context.applicationContext as Application,
-                            repository
-                        )
+                    val application =
+                        context.applicationContext as? Application ?: return@composable
+                    val favoritesViewModel = remember {
+                        FavoritesViewModel(application, repository)
                     }
                     FavoritesRoute(viewModel = favoritesViewModel, onRecipeClick = { recipeId ->
                         navController.navigate(Destination.Details.createRoute(recipeId))
@@ -176,14 +175,12 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                 ) {
                     val backStackEntry = navController.currentBackStackEntry
                     val savedStateHandle = backStackEntry?.savedStateHandle ?: return@composable
-
                     val context = LocalContext.current
+                    val application =
+                        context.applicationContext as? Application ?: return@composable
+
                     val viewModel: RecipeDetailsViewModel = remember(backStackEntry) {
-                        RecipeDetailsViewModel(
-                            context.applicationContext as Application,
-                            savedStateHandle,
-                            repository
-                        )
+                        RecipeDetailsViewModel(application, savedStateHandle, repository)
                     }
                     RecipeDetailsRoute(viewModel = viewModel)
                 }
