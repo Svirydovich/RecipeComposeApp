@@ -2,15 +2,10 @@ package com.example.recipeapp.features.favorites.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.recipeapp.MainViewModel
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.favorites.presentation.model.FavoritesUiState
-import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +30,7 @@ class FavoritesViewModel(
                 FavoritesUiState.Empty
             } else {
                 val recipes = ids.mapNotNull { idString ->
-                    idString.toIntOrNull()?.let { repository.getRecipeById(it)?.toUiModel() }
+                    idString.toIntOrNull()?.let { repository.getRecipe(it)?.toUiModel() }
                 }
 
                 if (recipes.isEmpty()) {
@@ -54,29 +49,4 @@ class FavoritesViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = FavoritesUiState.Loading
         )
-}
-
-
-object FavoritesViewModelFactory : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        val application =
-            checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-        val favoriteManager = FavoriteDataStoreManager(application)
-        val repository = RecipesRepository(favoriteManager)
-
-        return when {
-            modelClass.isAssignableFrom(FavoritesViewModel::class.java) -> {
-                modelClass.cast(
-                    FavoritesViewModel(
-                        application = application,
-                        repository = repository,
-                        favoriteManager = favoriteManager
-                    )
-                )
-            }
-
-            else -> throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    }
 }

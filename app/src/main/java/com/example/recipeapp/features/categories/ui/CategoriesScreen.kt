@@ -16,9 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
+import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipeapp.ui.theme.Dimens
 
@@ -26,6 +26,7 @@ import com.example.recipeapp.ui.theme.Dimens
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit,
+    repository: RecipesRepository
 ) {
     val viewModel: CategoriesViewModel = remember {
         CategoriesViewModel(repository)

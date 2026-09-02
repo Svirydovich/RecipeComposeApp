@@ -1,12 +1,12 @@
 package com.example.recipeapp.data.repository
 
+import android.util.Log
 import com.example.recipeapp.core.network.api.RecipesApiService
 import com.example.recipeapp.data.model.CategoryDto
 import com.example.recipeapp.data.model.RecipeDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 class RecipesRepositoryImpl(
     private val apiService: RecipesApiService
@@ -16,13 +16,11 @@ class RecipesRepositoryImpl(
         return withContext(Dispatchers.IO) {
             try {
                 apiService.getCategories()
-            } catch (e: HttpException) {
-                throw Exception("Ошибка сервера при получении категорий (код ${e.code()})", e)
-            } catch (e: IOException) {
-                throw Exception("Ошибка сети при получении категорий", e)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                throw Exception("Неизвестная ошибка при получении категорий", e)
-
+                Log.e("RecipesRepository", "Ошибка при получении категорий", e)
+                emptyList()
             }
         }
     }
@@ -31,20 +29,25 @@ class RecipesRepositoryImpl(
         return withContext(Dispatchers.IO) {
             try {
                 apiService.getRecipesByCategory(categoryId)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
+                Log.e("RecipesRepository", "Ошибка при получении рецептов", e)
                 emptyList()
             }
         }
     }
 
-    override suspend fun getRecipe(recipeId: Int): RecipeDto? {
+    override suspend fun getRecipe(recipeId: Int): RecipeDto {
         return withContext(Dispatchers.IO) {
             try {
                 apiService.getRecipe(recipeId)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                null
+                Log.e("RecipesRepository", "Ошибка при получении рецепта", e)
+                throw Exception("Ошибка при получении рецепта", e)
             }
         }
     }
 }
-

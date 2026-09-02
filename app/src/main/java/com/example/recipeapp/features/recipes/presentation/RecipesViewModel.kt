@@ -44,23 +44,29 @@ class RecipesViewModel(
     private fun loadRecipes(categoryId: Int) {
         viewModelScope.launch {
             try {
-                _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+                _uiState.update { current ->
+                    current.copy(isLoading = true, error = null)
+                }
 
-                val recipesDto = repository.getRecipesByCategoryId(categoryId)
+                val recipesDto = repository.getRecipesByCategory(categoryId)
 
                 val uiModels = recipesDto.map { it.toUiModel() }
 
-                _uiState.value = _uiState.value.copy(
-                    recipes = uiModels,
-                    isLoading = false
-                )
+                _uiState.update { current ->
+                    current.copy(
+                        recipes = uiModels,
+                        isLoading = false
+                    )
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.localizedMessage ?: "Неизвестная ошибка"
-                )
+                _uiState.update { current ->
+                    current.copy(
+                        isLoading = false,
+                        error = e.localizedMessage ?: "Неизвестная ошибка"
+                    )
+                }
             }
         }
     }
