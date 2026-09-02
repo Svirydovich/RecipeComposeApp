@@ -11,10 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import coil.compose.AsyncImage
-import com.example.recipeapp.R
+import com.example.recipeapp.core.ui.RecipeImage
 import com.example.recipeapp.features.categories.presentation.model.CategoryUiModel
 import com.example.recipeapp.ui.theme.Dimens
 
@@ -31,13 +28,10 @@ fun CategoryItem(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
         onClick = onClick
     ) {
-        AsyncImage(
+        RecipeImage(
             modifier = Modifier.aspectRatio(1.2f),
-            contentScale = ContentScale.Crop,
-            model = category.imageUrl,
-            placeholder = painterResource(R.drawable.ic_launcher_foreground),
-            error = painterResource(R.drawable.ic_launcher_background),
-            contentDescription = category.title
+            contentDescription = category.title,
+            imageUrl = category.imageUrl
         )
         Column(Modifier.padding(Dimens.Padding.PaddingMain)) {
             Text(
