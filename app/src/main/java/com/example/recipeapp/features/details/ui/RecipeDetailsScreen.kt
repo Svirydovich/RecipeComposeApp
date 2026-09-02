@@ -60,7 +60,6 @@ fun RecipeDetailsRoute(
 
         else -> {
             RecipeDetailsScreen(
-                viewModel = viewModel,
                 state = uiState,
                 onFavoriteToggle = { viewModel.toggleFavorite() },
                 onPortionsChange = { viewModel.updatePortions(it) },
@@ -72,7 +71,6 @@ fun RecipeDetailsRoute(
 
 @Composable
 fun RecipeDetailsScreen(
-    viewModel: RecipeDetailsViewModel,
     state: RecipeDetailsUiState,
     onFavoriteToggle: () -> Unit,
     onPortionsChange: (Int) -> Unit,

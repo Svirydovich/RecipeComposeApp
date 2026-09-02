@@ -22,6 +22,7 @@ import com.example.recipeapp.core.network.NetworkConfig
 import com.example.recipeapp.core.network.api.RecipesApiService
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
 import com.example.recipeapp.data.repository.RecipesRepositoryImpl
+import com.example.recipeapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipeapp.features.categories.ui.CategoriesScreen
 import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipeapp.features.details.ui.RecipeDetailsRoute
@@ -111,8 +112,10 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(Destination.Categories.route) {
+                    val categoriesViewModel = remember { CategoriesViewModel(repository) }
+                    val uiState by categoriesViewModel.uiState.collectAsState()
                     CategoriesScreen(
-                        repository = repository,
+                        uiState = uiState,
                         modifier = Modifier,
                         onCategoryClick = { categoryId, categoryTitle, imageURL ->
                             navController.navigate(

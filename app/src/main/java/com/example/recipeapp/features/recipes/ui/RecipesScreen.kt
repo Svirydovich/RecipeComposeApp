@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipeapp.ui.theme.Dimens
@@ -24,7 +23,6 @@ import com.example.recipeapp.ui.theme.Dimens
 fun RecipesScreen(
     uiState: RecipesUiState,
     onRecipeClick: (RecipeUiModel) -> Unit,
-    viewModel: RecipesViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
