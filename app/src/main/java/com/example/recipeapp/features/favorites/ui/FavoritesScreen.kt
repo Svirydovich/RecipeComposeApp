@@ -6,29 +6,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.features.favorites.presentation.FavoritesViewModel
-import com.example.recipeapp.features.favorites.presentation.FavoritesViewModelFactory
 import com.example.recipeapp.features.favorites.presentation.model.FavoritesUiState
 import com.example.recipeapp.features.recipes.ui.RecipeItem
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun FavoritesRoute(
+    viewModel: FavoritesViewModel,
     onRecipeClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModelFactory)
     val uiState by viewModel.uiState.collectAsState()
     FavoritesScreen(uiState = uiState, onRecipeClick = onRecipeClick, modifier = modifier)
 }

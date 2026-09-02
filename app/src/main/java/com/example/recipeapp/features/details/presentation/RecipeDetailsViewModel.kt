@@ -3,15 +3,11 @@ package com.example.recipeapp.features.details.presentation
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.recipeapp.MainViewModel
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUiState
+import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,10 +15,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class RecipeDetailsViewModel(
-    savedStateHandle: SavedStateHandle,
     application: Application,
+    savedStateHandle: SavedStateHandle,
     private val repository: RecipesRepository
 ) : AndroidViewModel(application) {
 
@@ -44,10 +41,8 @@ class RecipeDetailsViewModel(
     fun loadRecipe(id: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-
-            val recipe = repository.getRecipeUiModelById(id)
-
-            if (recipe != null) {
+            try {
+                val recipe = repository.getRecipe(id).toUiModel()
                 _uiState.update {
                     it.copy(
                         recipe = recipe,
@@ -56,12 +51,13 @@ class RecipeDetailsViewModel(
                         error = null
                     )
                 }
-            } else {
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        recipe = null,
                         isLoading = false,
-                        error = "Рецепт с ID $id не найден"
+                        error = e.localizedMessage ?: "Не удалось загрузить рецепт"
                     )
                 }
             }
@@ -82,22 +78,6 @@ class RecipeDetailsViewModel(
             initialState
         )
 
-//    fun initializeWithRecipe(recipe: RecipeUiModel) {
-//        _uiState.update { currentState ->
-//            val portionsToSet = if (currentState.recipe?.id == recipe.id) {
-//                currentState.portions
-//            } else {
-//                recipe.servings
-//            }
-//            currentState.copy(
-//                recipe = recipe,
-//                portions = portionsToSet,
-//                isLoading = false,
-//                error = null
-//            )
-//        }
-//    }
-
     fun toggleFavorite() {
         val state = uiState.value
         val currentRecipeId = state.recipe?.id ?: return
@@ -114,25 +94,5 @@ class RecipeDetailsViewModel(
         if (baseRecipe.servings <= 0) return
         val clampedPortions = newPortions.coerceIn(1, baseRecipe.servings * 3)
         _uiState.update { it.copy(portions = clampedPortions) }
-    }
-}
-
-object RecipeDetailsViewModelFactory : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        val application =
-            checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-        val savedStateHandle = extras.createSavedStateHandle()
-
-        val favoriteManager = FavoriteDataStoreManager(application)
-        val repository = RecipesRepository(favoriteManager)
-
-        return when {
-            modelClass.isAssignableFrom(RecipeDetailsViewModel::class.java) -> {
-                modelClass.cast(RecipeDetailsViewModel(savedStateHandle, application, repository))
-            }
-
-            else -> throw IllegalArgumentException("Unknown ViewModel class")
-        }
     }
 }

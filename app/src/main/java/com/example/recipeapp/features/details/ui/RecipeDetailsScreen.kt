@@ -23,21 +23,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.core.util.shareRecipe
 import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModel
-import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModelFactory
 import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUiState
 import com.example.recipeapp.ui.theme.Dimens
 import kotlin.math.roundToInt
 
 @Composable
 fun RecipeDetailsRoute(
+    viewModel: RecipeDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: RecipeDetailsViewModel = viewModel(factory = RecipeDetailsViewModelFactory)
-
     val uiState by viewModel.uiState.collectAsState()
 
     when {

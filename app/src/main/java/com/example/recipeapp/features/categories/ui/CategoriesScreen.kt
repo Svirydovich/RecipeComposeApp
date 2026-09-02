@@ -11,24 +11,19 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
-import com.example.recipeapp.features.categories.presentation.CategoriesViewModel
+import com.example.recipeapp.features.categories.presentation.model.CategoriesUiState
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
 fun CategoriesScreen(
+    uiState: CategoriesUiState,
     modifier: Modifier = Modifier,
-    onCategoryClick: (Int, String, String) -> Unit
+    onCategoryClick: (Int, String, String) -> Unit,
 ) {
-    val viewModel: CategoriesViewModel = viewModel()
-    val uiState by viewModel.uiState.collectAsState()
-
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
             imageModel = R.drawable.bcg_categories,
@@ -52,7 +47,7 @@ fun CategoriesScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = uiState.error.orEmpty()
+                        text = uiState.error
                     )
                 }
             }
