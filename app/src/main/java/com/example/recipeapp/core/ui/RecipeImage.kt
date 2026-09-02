@@ -32,11 +32,16 @@ fun RecipeImage(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
+        val context = LocalContext.current
+        val request = remember(imageUrl, context) {
+            ImageRequest.Builder(context)
                 .data(imageUrl)
                 .crossfade(300)
-                .build(),
+                .build()
+        }
+
+        AsyncImage(
+            model = request,
             contentDescription = contentDescription,
             modifier = Modifier.fillMaxSize(),
             contentScale = contentScale,
