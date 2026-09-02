@@ -37,7 +37,10 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun RecipesApp(deepLinkIntent: Intent? = null) {
@@ -48,8 +51,23 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
         Json { ignoreUnknownKeys = true; coerceInputValues = true }
     }
     val apiService = remember {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
+            .build()
+
         Retrofit.Builder()
             .baseUrl(NetworkConfig.BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(RecipesApiService::class.java)
@@ -161,7 +179,6 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                         remember(backStackEntry) { RecipesViewModel(savedStateHandle, repository) }
                     val uiState by recipesViewModel.uiState.collectAsState()
                     RecipesScreen(
-                        viewModel = recipesViewModel,
                         modifier = Modifier,
                         onRecipeClick = { recipe ->
                             navController.navigate(Destination.Details.createRoute(recipe.id))
