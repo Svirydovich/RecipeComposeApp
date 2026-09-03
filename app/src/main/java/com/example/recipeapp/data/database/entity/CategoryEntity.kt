@@ -10,3 +10,4 @@ data class CategoryEntity(
     val description: String,
     val imageUrl: String
 )
+
