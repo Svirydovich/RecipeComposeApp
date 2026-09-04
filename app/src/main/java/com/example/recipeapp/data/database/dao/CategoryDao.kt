@@ -10,3 +10,4 @@ interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY name")
     fun getAllCategories(): Flow<List<CategoryEntity>>
 }
+
