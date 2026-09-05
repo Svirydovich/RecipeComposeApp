@@ -16,6 +16,7 @@ import androidx.room3.PrimaryKey
         )
     ]
 )
+
 data class RecipeEntity(
     @PrimaryKey val id: Int,
     val title: String,
