@@ -5,6 +5,7 @@ import androidx.room3.ColumnTypeConverter
 class Converters {
     @ColumnTypeConverter
     fun fromString(value: String): List<String> {
+        if (value.isEmpty()) return emptyList()
         return value.split("|||")
     }
 
