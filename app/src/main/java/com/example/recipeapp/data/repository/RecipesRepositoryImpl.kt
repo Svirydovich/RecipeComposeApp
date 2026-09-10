@@ -56,11 +56,7 @@ class RecipesRepositoryImpl(
 
     override suspend fun getRecipe(recipeId: Int): RecipeDto {
         return withContext(Dispatchers.IO) {
-            val dto = apiService.getRecipe(recipeId)
-            recipeDao.upsertRecipes(
-                listOf(dto.toEntity(dto.id))
-            )
-            dto
+            apiService.getRecipe(recipeId)
         }
     }
 
