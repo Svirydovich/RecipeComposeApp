@@ -7,6 +7,6 @@ import androidx.room3.PrimaryKey
 data class CategoryEntity(
     @PrimaryKey val id: Int,
     val name: String,
-    val description: String,
-    val imageUrl: String
+    val description: String? = null,
+    val imageUrl: String? = null
 )

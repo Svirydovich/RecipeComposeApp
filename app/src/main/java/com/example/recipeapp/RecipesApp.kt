@@ -21,6 +21,7 @@ import androidx.navigation.navArgument
 import com.example.recipeapp.core.network.NetworkConfig
 import com.example.recipeapp.core.network.api.RecipesApiService
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
+import com.example.recipeapp.data.database.RecipesDatabase
 import com.example.recipeapp.data.repository.RecipesRepositoryImpl
 import com.example.recipeapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipeapp.features.categories.ui.CategoriesScreen
@@ -72,7 +73,11 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
             .build()
             .create(RecipesApiService::class.java)
     }
-    val repository = remember { RecipesRepositoryImpl(apiService) }
+    val context = LocalContext.current
+    val repository = remember {
+        val database = RecipesDatabase.buildDatabase(context)
+        RecipesRepositoryImpl(apiService, database)
+    }
 
     RecipeAppTheme {
         val navController = rememberNavController()

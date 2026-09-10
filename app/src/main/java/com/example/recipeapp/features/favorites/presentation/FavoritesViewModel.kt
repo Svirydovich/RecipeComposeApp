@@ -10,6 +10,7 @@ import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -25,20 +26,12 @@ class FavoritesViewModel(
 
     val uiState: StateFlow<FavoritesUiState> = favoriteManager
         .getFavoriteIdsFlow()
-        .map { ids ->
-            if (ids.isEmpty()) {
-                FavoritesUiState.Empty
-            } else {
-                val recipes = ids.mapNotNull { idString ->
-                    idString.toIntOrNull()?.let { repository.getRecipe(it)?.toUiModel() }
-                }
-
-                if (recipes.isEmpty()) {
-                    FavoritesUiState.Empty
-                } else {
-                    FavoritesUiState.Success(recipes)
-                }
-            }
+        .flatMapLatest { ids ->
+            repository.getRecipesByIds(ids.mapNotNull { it.toIntOrNull() })
+        }
+        .map { recipes ->
+            if (recipes.isEmpty()) FavoritesUiState.Empty
+            else FavoritesUiState.Success(recipes.map { it.toUiModel() })
         }
         .catch { error ->
             emit(FavoritesUiState.Error("Ошибка загрузки: ${error.message ?: "неизвестная ошибка"}"))
