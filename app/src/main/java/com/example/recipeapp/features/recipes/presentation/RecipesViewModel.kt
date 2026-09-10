@@ -11,6 +11,7 @@ import com.example.recipeapp.navigation.Destination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
@@ -31,40 +32,27 @@ class RecipesViewModel(
         val decodedImageUrl =
             URLDecoder.decode(savedStateHandle[Destination.CATEGORY_IMAGE_ARG] ?: "", "UTF-8")
 
-        _uiState.update { current ->
-            current.copy(
-                categoryTitle = decodedTitle,
-                categoryImageUrl = decodedImageUrl
-            )
-        }
-
-        loadRecipes(categoryId)
-    }
-
-    private fun loadRecipes(categoryId: Int) {
         viewModelScope.launch {
             try {
-                _uiState.update { current ->
-                    current.copy(isLoading = true, error = null)
-                }
-
-                val recipesDto = repository.getRecipesByCategory(categoryId)
-
-                val uiModels = recipesDto.map { it.toUiModel() }
-
-                _uiState.update { current ->
-                    current.copy(
-                        recipes = uiModels,
-                        isLoading = false
-                    )
-                }
+                repository.getRecipesByCategory(categoryId)
+                    .map { dtos -> dtos.map { it.toUiModel() } }
+                    .collect { uiModels ->
+                        _uiState.update { state ->
+                            state.copy(
+                                recipes = uiModels,
+                                categoryTitle = decodedTitle,
+                                categoryImageUrl = decodedImageUrl,
+                                isLoading = false
+                            )
+                        }
+                    }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _uiState.update { current ->
-                    current.copy(
+                _uiState.update { currentState ->
+                    currentState.copy(
                         isLoading = false,
-                        error = e.localizedMessage ?: "Неизвестная ошибка"
+                        error = "Не удалось загрузить рецепты"
                     )
                 }
             }

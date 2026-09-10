@@ -8,6 +8,7 @@ import com.example.recipeapp.features.categories.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
@@ -19,11 +20,14 @@ class CategoriesViewModel(private val repository: RecipesRepository) : ViewModel
     init {
         viewModelScope.launch {
             try {
-                val categories = repository.getCategories().map { it.toUiModel() }
 
-                _uiState.update { currentState ->
-                    currentState.copy(categories = categories, isLoading = false)
-                }
+                repository.getCategories()
+                    .map { dtos -> dtos.map { it.toUiModel() } }
+                    .collect { uiModels ->
+                        _uiState.update { state ->
+                            state.copy(categories = uiModels, isLoading = false)
+                        }
+                    }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
