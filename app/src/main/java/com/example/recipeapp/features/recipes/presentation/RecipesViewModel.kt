@@ -42,7 +42,7 @@ class RecipesViewModel(
                                 recipes = uiModels,
                                 categoryTitle = decodedTitle,
                                 categoryImageUrl = decodedImageUrl,
-                                isLoading = state.isLoading && uiModels.isEmpty()
+                                isLoading = false
                             )
                         }
                     }

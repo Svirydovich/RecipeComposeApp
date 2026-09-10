@@ -56,14 +56,11 @@ class RecipesRepositoryImpl(
 
     override suspend fun getRecipe(recipeId: Int): RecipeDto {
         return withContext(Dispatchers.IO) {
-            try {
-                apiService.getRecipe(recipeId)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Log.e("RecipesRepository", "Ошибка при получении рецепта", e)
-                throw e
-            }
+            val dto = apiService.getRecipe(recipeId)
+            recipeDao.upsertRecipes(
+                listOf(dto.toEntity(dto.id))
+            )
+            dto
         }
     }
 
