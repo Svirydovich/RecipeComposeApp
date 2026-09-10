@@ -10,6 +10,7 @@ import com.example.recipeapp.data.model.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -56,7 +57,12 @@ class RecipesRepositoryImpl(
 
     override suspend fun getRecipe(recipeId: Int): RecipeDto {
         return withContext(Dispatchers.IO) {
-            apiService.getRecipe(recipeId)
+            val dto = apiService.getRecipe(recipeId)
+            val existing = recipeDao.getRecipeById(recipeId).first()
+            if (existing != null) {
+                recipeDao.upsertRecipes(listOf(dto.toEntity(existing.categoryId)))
+            }
+            dto
         }
     }
 
