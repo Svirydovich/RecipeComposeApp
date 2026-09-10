@@ -59,9 +59,7 @@ class RecipesRepositoryImpl(
         return withContext(Dispatchers.IO) {
             val dto = apiService.getRecipe(recipeId)
             val existing = recipeDao.getRecipeById(recipeId).first()
-            if (existing != null) {
-                recipeDao.upsertRecipes(listOf(dto.toEntity(existing.categoryId)))
-            }
+            recipeDao.upsertRecipes(listOf(dto.toEntity(existing?.categoryId)))
             dto
         }
     }

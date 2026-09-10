@@ -19,7 +19,7 @@ import androidx.room3.PrimaryKey
 data class RecipeEntity(
     @PrimaryKey val id: Int,
     val title: String,
-    @ColumnInfo(name = "categoryId") val categoryId: Int,
+    @ColumnInfo(name = "categoryId") val categoryId: Int?,
     val imageUrl: String,
     val ingredients: String,
     val method: String,

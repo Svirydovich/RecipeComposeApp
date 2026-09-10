@@ -4,8 +4,6 @@ import android.util.Log
 import com.example.recipeapp.data.database.entity.RecipeEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 
 @Serializable
 data class RecipeDto(
@@ -22,7 +20,7 @@ private val recipeJson = Json {
     coerceInputValues = true
 }
 
-fun RecipeDto.toEntity(categoryId: Int) = RecipeEntity(
+fun RecipeDto.toEntity(categoryId: Int?) = RecipeEntity(
     id = id,
     title = title,
     categoryId = categoryId,
