@@ -9,12 +9,13 @@ import com.example.recipeapp.data.model.toDto
 import com.example.recipeapp.data.model.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
 class RecipesRepositoryImpl(
@@ -22,8 +23,10 @@ class RecipesRepositoryImpl(
     database: RecipesDatabase
 ) : RecipesRepository {
 
+    private val tag = "RecipesRepository"
     private val categoryDao = database.categoryDao()
     private val recipeDao = database.recipeDao()
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
 
     override fun getCategories(): Flow<List<CategoryDto>> {
@@ -34,7 +37,7 @@ class RecipesRepositoryImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e("RecipesRepository", "Ошибка обновления: ${e.message}")
+                Log.e(tag, "Ошибка обновления: ${e.message}")
             }
         }
         return categoryDao.getAllCategories().map { entities -> entities.map { it.toDto() } }
@@ -48,20 +51,32 @@ class RecipesRepositoryImpl(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e("RecipesRepository", "Ошибка при получении рецептов: ${e.message}")
+                Log.e(tag, "Ошибка при получении рецептов: ${e.message}")
             }
         }
         return recipeDao.getRecipesByCategory(categoryId)
             .map { entities -> entities.map { it.toDto() } }
     }
 
-    override suspend fun getRecipe(recipeId: Int): RecipeDto {
-        return withContext(Dispatchers.IO) {
-            val dto = apiService.getRecipe(recipeId)
-            val existing = recipeDao.getRecipeById(recipeId).first()
-            recipeDao.upsertRecipes(listOf(dto.toEntity(existing?.categoryId)))
-            dto
-        }
+    override fun getRecipe(recipeId: Int): Flow<RecipeDto?> {
+        return recipeDao.getRecipeById(recipeId)
+            .map { entity -> entity?.toDto() }
+            .onStart {
+                repositoryScope.launch {
+                    try {
+                        Log.d(tag, "Фоновое обновление рецепта $recipeId")
+                        val freshDto = apiService.getRecipe(recipeId)
+
+                        val existingEntity = recipeDao.getRecipeById(recipeId).first()
+
+                        recipeDao.upsertRecipes(listOf(freshDto.toEntity(existingEntity?.categoryId)))
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.e(tag, "Сетевая ошибка обновления рецепта $recipeId", e)
+                    }
+                }
+            }
     }
 
     override fun getRecipesByIds(ids: List<Int>): Flow<List<RecipeDto>> {

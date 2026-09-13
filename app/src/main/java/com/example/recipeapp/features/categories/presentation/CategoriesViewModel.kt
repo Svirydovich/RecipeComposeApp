@@ -20,7 +20,6 @@ class CategoriesViewModel(private val repository: RecipesRepository) : ViewModel
     init {
         viewModelScope.launch {
             try {
-
                 repository.getCategories()
                     .map { dtos -> dtos.map { it.toUiModel() } }
                     .collect { uiModels ->
