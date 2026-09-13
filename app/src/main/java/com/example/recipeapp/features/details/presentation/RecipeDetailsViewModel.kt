@@ -10,7 +10,6 @@ import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUi
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -65,7 +64,6 @@ class RecipeDetailsViewModel(
 
         viewModelScope.launch {
             launch {
-                delay(8000)
                 if (_uiState.value.recipe == null &&
                     _uiState.value.error.isNullOrEmpty()
                 ) {
