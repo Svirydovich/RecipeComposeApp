@@ -10,6 +10,7 @@ import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUi
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +18,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(FlowPreview::class)
 class RecipeDetailsViewModel(
@@ -46,37 +45,47 @@ class RecipeDetailsViewModel(
 
     init {
         _uiState.update { it.copy(isLoading = true, error = null) }
+        var hasReceivedValidData = false
 
-        flow { emit(Unit) }
+        val recipeFlow = flow { emit(Unit) }
             .flatMapLatest {
                 repository.getRecipe(recipeId)
-                    .map { dto -> updateStateWithRecipe(dto?.toUiModel()) }
+                    .map { dto ->
+                        hasReceivedValidData = true
+                        updateStateWithRecipe(dto?.toUiModel())
+                    }
             }
             .onStart {
-            }
-            .onEmpty {
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        error = "Проверьте подключение к интернету"
-                    )
-                }
             }
             .catch { e ->
                 _uiState.update {
                     it.copy(isLoading = false, error = "Критическая ошибка хранилища")
                 }
             }
-            .onCompletion { cause ->
-                if (cause is java.util.concurrent.TimeoutCancellationException) {
-                    if (_uiState.value.recipe == null && !_uiState.value.error.isNullOrEmpty().not()) {
-                        _uiState.update {
-                            it.copy(isLoading = false, error = "Сервер не отвечает" )
-                        }
+
+        viewModelScope.launch {
+            launch {
+                delay(8000)
+                if (_uiState.value.recipe == null &&
+                    _uiState.value.error.isNullOrEmpty()
+                ) {
+
+                    _uiState.update {
+                        it.copy(isLoading = false, error = "Проверьте подключение к интернету")
                     }
                 }
             }
-            .launchIn(viewModelScope)
+
+            try {
+                recipeFlow.collect { }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (_uiState.value.error.isNullOrEmpty()) {
+                    _uiState.update { it.copy(isLoading = false, error = "Неизвестная ошибка") }
+                }
+            }
+        }
     }
 
     private fun updateStateWithRecipe(uiRecipe: RecipeUiModel?) {
@@ -126,15 +135,3 @@ class RecipeDetailsViewModel(
         _uiState.update { it.copy(portions = clampedPortions) }
     }
 }
-
-/*
-.onEach { entity -> updateStateWithRecipe(entity?.toUiModel()) }
-            .onEmpty {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = "Нет данных. Проверьте интернет."
-                    )
-                }
-            }
- */
