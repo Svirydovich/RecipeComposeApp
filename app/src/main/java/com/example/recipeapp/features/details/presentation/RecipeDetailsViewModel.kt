@@ -13,11 +13,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -43,45 +39,28 @@ class RecipeDetailsViewModel(
     private val _uiState = MutableStateFlow(initialState)
 
     init {
-        _uiState.update { it.copy(isLoading = true, error = null) }
-        var hasReceivedValidData = false
-
-        val recipeFlow = flow { emit(Unit) }
-            .flatMapLatest {
+        try {
+            viewModelScope.launch {
                 repository.getRecipe(recipeId)
-                    .map { dto ->
-                        hasReceivedValidData = true
+                    .onStart {
+                        if (_uiState.value.recipe == null) {
+                            _uiState.update { it.copy(isLoading = true, error = null) }
+                        }
+                    }
+                    .collect { dto ->
                         updateStateWithRecipe(dto?.toUiModel())
+
+                        if (dto == null && !_uiState.value.isLoading) {
+                            _uiState.update { it.copy(error = "Данные рецепта отсутствуют") }
+                        }
                     }
             }
-            .onStart {
-            }
-            .catch { e ->
-                _uiState.update {
-                    it.copy(isLoading = false, error = "Критическая ошибка хранилища")
-                }
-            }
 
-        viewModelScope.launch {
-            launch {
-                if (_uiState.value.recipe == null &&
-                    _uiState.value.error.isNullOrEmpty()
-                ) {
-
-                    _uiState.update {
-                        it.copy(isLoading = false, error = "Проверьте подключение к интернету")
-                    }
-                }
-            }
-
-            try {
-                recipeFlow.collect { }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (_uiState.value.error.isNullOrEmpty()) {
-                    _uiState.update { it.copy(isLoading = false, error = "Неизвестная ошибка") }
-                }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            if (_uiState.value.error.isNullOrEmpty()) {
+                _uiState.update { it.copy(isLoading = false, error = "Неизвестная ошибка") }
             }
         }
     }

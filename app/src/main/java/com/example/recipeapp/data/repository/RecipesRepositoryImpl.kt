@@ -64,12 +64,18 @@ class RecipesRepositoryImpl(
             .onStart {
                 repositoryScope.launch {
                     try {
-                        Log.d(tag, "Фоновое обновление рецепта $recipeId")
                         val freshDto = apiService.getRecipe(recipeId)
-
                         val existingEntity = recipeDao.getRecipeById(recipeId).first()
 
-                        recipeDao.upsertRecipes(listOf(freshDto.toEntity(existingEntity?.categoryId)))
+                        if (existingEntity != null) {
+                            recipeDao.upsertRecipes(listOf(freshDto.toEntity(existingEntity.categoryId)))
+                        } else {
+                            Log.wtf(
+                                tag,
+                                "Инвариант RecipePrecondition нарушен: рецепта $recipeId нет в Room перед обновлением. " +
+                                        "Проверьте контракт навигации: экран деталей должен открываться только после кеширования списка."
+                            )
+                        }
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
