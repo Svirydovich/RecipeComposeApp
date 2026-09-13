@@ -39,8 +39,8 @@ class RecipeDetailsViewModel(
     private val _uiState = MutableStateFlow(initialState)
 
     init {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 repository.getRecipe(recipeId)
                     .onStart {
                         if (_uiState.value.recipe == null) {
@@ -49,18 +49,14 @@ class RecipeDetailsViewModel(
                     }
                     .collect { dto ->
                         updateStateWithRecipe(dto?.toUiModel())
-
-                        if (dto == null && !_uiState.value.isLoading) {
-                            _uiState.update { it.copy(error = "Данные рецепта отсутствуют") }
-                        }
                     }
-            }
 
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            if (_uiState.value.error.isNullOrEmpty()) {
-                _uiState.update { it.copy(isLoading = false, error = "Неизвестная ошибка") }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (_uiState.value.error.isNullOrEmpty()) {
+                    _uiState.update { it.copy(isLoading = false, error = "Неизвестная ошибка") }
+                }
             }
         }
     }
