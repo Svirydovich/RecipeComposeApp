@@ -7,16 +7,20 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUiState
+import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
+@OptIn(FlowPreview::class)
 class RecipeDetailsViewModel(
     application: Application,
     savedStateHandle: SavedStateHandle,
@@ -35,32 +39,40 @@ class RecipeDetailsViewModel(
     private val _uiState = MutableStateFlow(initialState)
 
     init {
-        loadRecipe(recipeId)
-    }
-
-    fun loadRecipe(id: Int) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val recipe = repository.getRecipe(id).toUiModel()
-                _uiState.update {
-                    it.copy(
-                        recipe = recipe,
-                        portions = recipe.servings,
-                        isLoading = false,
-                        error = null
-                    )
-                }
+                repository.getRecipe(recipeId)
+                    .onStart {
+                        if (_uiState.value.recipe == null) {
+                            _uiState.update { it.copy(isLoading = true, error = null) }
+                        }
+                    }
+                    .collect { dto ->
+                        updateStateWithRecipe(dto?.toUiModel())
+                    }
+
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.localizedMessage ?: "Не удалось загрузить рецепт"
-                    )
+                if (_uiState.value.error.isNullOrEmpty()) {
+                    _uiState.update { it.copy(isLoading = false, error = "Неизвестная ошибка") }
                 }
             }
+        }
+    }
+
+    private fun updateStateWithRecipe(uiRecipe: RecipeUiModel?) {
+        if (uiRecipe != null) {
+            _uiState.update { state ->
+                state.copy(
+                    recipe = uiRecipe,
+                    portions = if (state.portions == 1 && state.recipe == null) uiRecipe.servings else state.portions,
+                    isLoading = false,
+                    error = null
+                )
+            }
+        } else {
+            _uiState.update { it.copy(isLoading = true, error = null) }
         }
     }
 
