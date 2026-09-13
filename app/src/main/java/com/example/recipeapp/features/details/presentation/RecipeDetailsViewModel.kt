@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
@@ -24,10 +23,8 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
 class RecipeDetailsViewModel(
@@ -53,8 +50,7 @@ class RecipeDetailsViewModel(
         flow { emit(Unit) }
             .flatMapLatest {
                 repository.getRecipe(recipeId)
-                    .filterNotNull()
-                    .map { dto -> updateStateWithRecipe(dto.toUiModel()) }
+                    .map { dto -> updateStateWithRecipe(dto?.toUiModel()) }
             }
             .onStart {
             }
@@ -71,7 +67,6 @@ class RecipeDetailsViewModel(
                     it.copy(isLoading = false, error = "Критическая ошибка хранилища")
                 }
             }
-            .timeout(8.seconds)
             .onCompletion { cause ->
                 if (cause is java.util.concurrent.TimeoutCancellationException) {
                     if (_uiState.value.recipe == null && !_uiState.value.error.isNullOrEmpty().not()) {
