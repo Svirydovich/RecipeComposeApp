@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -140,7 +141,11 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                         }
                     )
                 ) { backStackEntry ->
-                    val savedStateHandle = backStackEntry.savedStateHandle
+                    val savedStateHandle = SavedStateHandle().apply {
+                        backStackEntry.arguments?.let { bundle ->
+                            bundle.keySet().forEach { key -> set(key, bundle.get(key)) }
+                        }
+                    }
                     val recipesViewModel =
                         remember(backStackEntry) {
                             RecipesViewModelFactory(
@@ -164,7 +169,11 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                         navArgument(Destination.RECIPE_ID_ARG) { type = NavType.IntType }
                     )
                 ) { backStackEntry ->
-                    val savedStateHandle = backStackEntry.savedStateHandle
+                    val savedStateHandle = SavedStateHandle().apply {
+                        backStackEntry.arguments?.let { bundle ->
+                            bundle.keySet().forEach { key -> set(key, bundle.get(key)) }
+                        }
+                    }
                     val context = LocalContext.current
                     val application =
                         context.applicationContext as? Application ?: return@composable
