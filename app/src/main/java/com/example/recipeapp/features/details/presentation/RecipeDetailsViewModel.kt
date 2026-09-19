@@ -72,7 +72,13 @@ class RecipeDetailsViewModel(
                 )
             }
         } else {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update {
+                it.copy(
+                    recipe = null,
+                    isLoading = false,
+                    error = "Рецепт с ID $recipeId не найден"
+                )
+            }
         }
     }
 
