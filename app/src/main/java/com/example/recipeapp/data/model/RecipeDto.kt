@@ -11,8 +11,7 @@ data class RecipeDto(
     val title: String,
     val ingredients: List<IngredientDto>,
     val method: List<String>,
-    val imageUrl: String?,
-    val servings: Int
+    val imageUrl: String?
 )
 
 private val recipeJson = Json {
@@ -26,8 +25,7 @@ fun RecipeDto.toEntity(categoryId: Int?) = RecipeEntity(
     categoryId = categoryId,
     imageUrl = imageUrl ?: "",
     ingredients = recipeJson.encodeToString(ingredients),
-    method = recipeJson.encodeToString(method),
-    servings = servings
+    method = recipeJson.encodeToString(method)
 )
 
 fun RecipeEntity.toDto() = RecipeDto(
@@ -55,6 +53,5 @@ fun RecipeEntity.toDto() = RecipeDto(
         .getOrDefault(
             emptyList()
         ),
-    imageUrl = imageUrl.ifBlank { null },
-    servings = servings ?: 1
+    imageUrl = imageUrl.ifBlank { null }
 )
