@@ -66,7 +66,6 @@ class RecipeDetailsViewModel(
             _uiState.update { state ->
                 state.copy(
                     recipe = uiRecipe,
-                    portions = if (state.portions == 1 && state.recipe == null) uiRecipe.servings else state.portions,
                     isLoading = false,
                     error = null
                 )
@@ -109,8 +108,7 @@ class RecipeDetailsViewModel(
 
     fun updatePortions(newPortions: Int) {
         val baseRecipe = _uiState.value.recipe ?: return
-        if (baseRecipe.servings <= 0) return
-        val clampedPortions = newPortions.coerceIn(1, baseRecipe.servings * 3)
+        val clampedPortions = newPortions.coerceIn(1, 12)
         _uiState.update { it.copy(portions = clampedPortions) }
     }
 }

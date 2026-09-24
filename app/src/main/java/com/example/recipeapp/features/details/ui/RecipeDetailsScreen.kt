@@ -115,12 +115,12 @@ fun RecipeDetailsScreen(
                     sliderValue = newFloat
                 },
                 onValueChangeFinished = {
-                    val rounded = sliderValue.roundToInt().coerceIn(1, recipe.servings * 3)
+                    val rounded = sliderValue.roundToInt().coerceIn(1, 12)
                     if (rounded != state.portions) {
                         onPortionsChange(rounded)
                     }
                 },
-                valueRange = 1f..(recipe.servings * 3).toFloat(),
+                valueRange = 1f..12f,
                 steps = 0
             )
         }

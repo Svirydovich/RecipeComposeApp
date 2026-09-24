@@ -15,8 +15,7 @@ data class RecipeDetailsUiState(
     val scaledIngredients: List<IngredientUiModel>
         get() {
             val baseRecipe = recipe ?: return emptyList()
-            if (baseRecipe.servings <= 0) return emptyList()
-            val multiplier = portions.coerceAtLeast(1).toFloat() / baseRecipe.servings.toFloat()
+            val multiplier = portions.coerceAtLeast(1).toFloat()
             return baseRecipe.ingredients.map { ingredient ->
                 val originalQuantity = ingredient.quantity.toFloatOrNull()
                 ingredient.copy(

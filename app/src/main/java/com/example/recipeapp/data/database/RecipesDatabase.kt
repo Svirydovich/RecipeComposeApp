@@ -12,7 +12,7 @@ import com.example.recipeapp.data.database.entity.CategoryEntity
 import com.example.recipeapp.data.database.entity.RecipeEntity
 
 @ColumnTypeConverters(Converters::class)
-@Database(entities = [CategoryEntity::class, RecipeEntity::class], version = 2, exportSchema = false)
+@Database(entities = [CategoryEntity::class, RecipeEntity::class], version = 3, exportSchema = false)
 abstract class RecipesDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun recipeDao(): RecipeDao
