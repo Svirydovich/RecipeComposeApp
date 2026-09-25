@@ -5,15 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.categories.presentation.model.CategoriesUiState
 import com.example.recipeapp.features.categories.presentation.model.toUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-class CategoriesViewModel(private val repository: RecipesRepository) : ViewModel() {
+@HiltViewModel
+class CategoriesViewModel @Inject constructor(private val repository: RecipesRepository) :
+    ViewModel() {
     private val _uiState = MutableStateFlow(CategoriesUiState(isLoading = true))
     val uiState: StateFlow<CategoriesUiState> = _uiState.asStateFlow()
 

@@ -8,6 +8,7 @@ import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
 import com.example.recipeapp.navigation.Destination
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,9 +16,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
+import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-class RecipesViewModel(
+@HiltViewModel
+class RecipesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: RecipesRepository
 ) : ViewModel() {
