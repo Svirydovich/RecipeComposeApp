@@ -22,6 +22,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
     private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
+
     @Provides
     @Singleton
     fun provideRecipesApiService(): RecipesApiService {

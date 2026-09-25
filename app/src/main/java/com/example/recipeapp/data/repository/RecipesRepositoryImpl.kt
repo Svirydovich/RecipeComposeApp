@@ -31,32 +31,37 @@ class RecipesRepositoryImpl @Inject constructor(
 
 
     override fun getCategories(): Flow<List<CategoryDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val fresh = apiService.getCategories()
-                categoryDao.upsertCategories(fresh.map { it.toEntity() })
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Log.e(tag, "Ошибка обновления: ${e.message}")
+        return categoryDao.getAllCategories()
+            .map { entities -> entities.map { it.toDto() } }
+            .onStart {
+                repositoryScope.launch {
+                    try {
+                        val fresh = apiService.getCategories()
+                        categoryDao.upsertCategories(fresh.map { it.toEntity() })
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.e(tag, "Ошибка обновления: ${e.message}")
+                    }
+                }
             }
-        }
-        return categoryDao.getAllCategories().map { entities -> entities.map { it.toDto() } }
     }
 
     override fun getRecipesByCategory(categoryId: Int): Flow<List<RecipeDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val fresh = apiService.getRecipesByCategory(categoryId)
-                recipeDao.upsertRecipes(fresh.map { it.toEntity(categoryId) })
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Log.e(tag, "Ошибка при получении рецептов: ${e.message}")
-            }
-        }
         return recipeDao.getRecipesByCategory(categoryId)
             .map { entities -> entities.map { it.toDto() } }
+            .onStart {
+                repositoryScope.launch {
+                    try {
+                        val fresh = apiService.getRecipesByCategory(categoryId)
+                        recipeDao.upsertRecipes(fresh.map { it.toEntity(categoryId) })
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.e(tag, "Ошибка при получении рецептов: ${e.message}")
+                    }
+                }
+            }
     }
 
     override fun getRecipe(recipeId: Int): Flow<RecipeDto?> {
