@@ -1,12 +1,12 @@
 package com.example.recipeapp.features.favorites.presentation
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.favorites.presentation.model.FavoritesUiState
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -14,15 +14,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class FavoritesViewModel(
-    application: Application,
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
     repository: RecipesRepository,
-    favoriteManager: FavoriteDataStoreManager = FavoriteDataStoreManager(
-        application
-    )
+    favoriteManager: FavoriteDataStoreManager
 ) :
-    AndroidViewModel(application) {
+    ViewModel() {
 
     val uiState: StateFlow<FavoritesUiState> = favoriteManager
         .getFavoriteIdsFlow()

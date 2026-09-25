@@ -1,14 +1,15 @@
 package com.example.recipeapp.features.details.presentation
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.core.util.FavoriteDataStoreManager
 import com.example.recipeapp.data.repository.RecipesRepository
 import com.example.recipeapp.features.details.presentation.model.RecipeDetailsUiState
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.features.recipes.presentation.model.toUiModel
+import com.example.recipeapp.navigation.Destination
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,18 +19,19 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(FlowPreview::class)
-class RecipeDetailsViewModel(
-    application: Application,
+@HiltViewModel
+class RecipeDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: RecipesRepository
-) : AndroidViewModel(application) {
+    private val repository: RecipesRepository,
+    private val favoriteManager: FavoriteDataStoreManager
+) : ViewModel() {
 
-    private val recipeId: Int = savedStateHandle.get<Int>("recipeId")
+    private val recipeId: Int = savedStateHandle.get<Int>(Destination.RECIPE_ID_ARG)
         ?: throw IllegalArgumentException("recipeId is required")
-    private val favoriteManager = FavoriteDataStoreManager(application)
     private val initialState = RecipeDetailsUiState(
         recipe = null,
         portions = 1,
@@ -107,7 +109,6 @@ class RecipeDetailsViewModel(
     }
 
     fun updatePortions(newPortions: Int) {
-        val baseRecipe = _uiState.value.recipe ?: return
         val clampedPortions = newPortions.coerceIn(1, 12)
         _uiState.update { it.copy(portions = clampedPortions) }
     }

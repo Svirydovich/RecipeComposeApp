@@ -3,16 +3,14 @@ package com.example.recipeapp.core.util
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FavoriteDataStoreManager(private val context: Context) {
-    suspend fun isFavorite(recipeId: Int): Boolean {
-        val preferences = context.dataStore.data.first()
-        return preferences[PreferencesKeys.FAVORITE_RECIPE_IDS]?.contains(recipeId.toString())
-            ?: false
-    }
+@Singleton
+class FavoriteDataStoreManager @Inject constructor(@param:ApplicationContext private val context: Context) {
 
     suspend fun addFavorite(recipeId: Int) {
         context.dataStore.edit { preferences ->
@@ -34,12 +32,6 @@ class FavoriteDataStoreManager(private val context: Context) {
         val preferencesFlow: Flow<Preferences> = context.dataStore.data
         return preferencesFlow.map { preferences ->
             preferences[PreferencesKeys.FAVORITE_RECIPE_IDS] ?: emptySet()
-        }
-    }
-
-    fun isFavoriteFlow(recipeId: Int): Flow<Boolean> {
-        return getFavoriteIdsFlow().map { favoriteIds ->
-            favoriteIds.contains(recipeId.toString())
         }
     }
 
