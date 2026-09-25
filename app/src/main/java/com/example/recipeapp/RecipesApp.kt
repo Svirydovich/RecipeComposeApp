@@ -36,7 +36,6 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
 
     RecipeAppTheme {
         val navController = rememberNavController()
-
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
                 val recipeId: Int? = when (uri.scheme) {
