@@ -1,12 +1,12 @@
 package com.example.recipeapp.data.model
 
-import org.junit.Assert.*
 import com.example.recipeapp.features.categories.presentation.model.toUiModel
+import org.junit.Assert.*
 import org.junit.Test
 
 class CategoryDtoTest {
     @Test
-    fun converts_DTO_to_UI_model() {
+    fun `converts DTO to UI model`() {
         val dto = CategoryDto(
             id = 1,
             title = "Завтраки",
