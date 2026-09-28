@@ -21,6 +21,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 class RecipesRepositoryTest {
     val recipesApiService = mockk<RecipesApiService>()
@@ -62,7 +63,7 @@ class RecipesRepositoryTest {
             val categories = awaitItem()
             assertEquals(1, categories.size)
             assertEquals("Завтраки", categories[0].title)
-            awaitComplete()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -78,14 +79,14 @@ class RecipesRepositoryTest {
         )
 
         every { categoryDao.getAllCategories() } returns flowOf(dbData)
-        coEvery { recipesApiService.getCategories() } throws Exception("Network failure")
+        coEvery { recipesApiService.getCategories() } throws IOException("Network failure")
         coEvery { categoryDao.upsertCategories(any()) } just Runs
 
         repository.getCategories().test {
             val item = awaitItem()
             assertEquals(1, item.size)
             assertEquals("Супы", item[0].title)
-            awaitComplete()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -115,7 +116,7 @@ class RecipesRepositoryTest {
             val items = awaitItem()
             assertEquals(1, items.size)
             assertNull(items[0].imageUrl)
-            awaitComplete()
+            cancelAndIgnoreRemainingEvents()
         }
         verify { recipeDao.getRecipesByCategory(targetCategoryId) }
     }
