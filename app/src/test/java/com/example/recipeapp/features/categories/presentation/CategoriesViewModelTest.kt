@@ -1,5 +1,6 @@
 package com.example.recipeapp.features.categories.presentation
 
+import app.cash.turbine.test
 import com.example.recipeapp.data.repository.RecipesRepository
 import fixtures.CategoryTestFixtures
 import io.mockk.clearAllMocks
@@ -37,11 +38,14 @@ class CategoriesViewModelTest {
 
         val viewModel = createViewModel()
 
-        val state = viewModel.uiState.value
-        assertFalse(state.isLoading)
-        assertNull(state.error)
-        assertEquals(3, state.categories.size)
-        assertEquals("Завтраки 1", state.categories[0].title)
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertFalse(state.isLoading)
+            assertNull(state.error)
+            assertEquals(3, state.categories.size)
+            assertEquals("Завтраки 1", state.categories[0].title)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -50,10 +54,13 @@ class CategoriesViewModelTest {
 
         val viewModel = createViewModel()
 
-        val state = viewModel.uiState.value
-        assertFalse(state.isLoading)
-        assertNull(state.error)
-        assertTrue(state.categories.isEmpty())
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertFalse(state.isLoading)
+            assertNull(state.error)
+            assertTrue(state.categories.isEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -62,10 +69,13 @@ class CategoriesViewModelTest {
 
         val viewModel = createViewModel()
 
-        val state = viewModel.uiState.value
-        assertFalse(state.isLoading)
-        assertEquals("Network error", state.error)
-        assertTrue(state.categories.isEmpty())
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertFalse(state.isLoading)
+            assertEquals("Network error", state.error)
+            assertTrue(state.categories.isEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @After
