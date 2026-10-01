@@ -4,12 +4,15 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.recipeapp.features.recipes.presentation.model.IngredientUiModel
 import com.example.recipeapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipeapp.features.recipes.presentation.model.RecipesUiState
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class RecipesContentTest {
 
     @get:Rule
@@ -84,7 +87,7 @@ class RecipesContentTest {
             )
         }
 
-        composeTestRule.onNodeWithText("ЗАВТРАКИ").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Завтраки").assertIsDisplayed()
         composeTestRule.onNodeWithText("ОМЛЕТ").assertIsDisplayed()
         composeTestRule.onNodeWithText("Яйца").assertIsDisplayed()
     }
