@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
@@ -20,7 +21,7 @@ import com.example.recipeapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
-fun RecipesScreen(
+fun RecipesContent(
     uiState: RecipesUiState,
     onRecipeClick: (RecipeUiModel) -> Unit,
     modifier: Modifier = Modifier
@@ -41,14 +42,19 @@ fun RecipesScreen(
                         .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.testTag("loading_indicator")
+                    )
                 }
             }
 
-            uiState.hasError -> Text(uiState.error.orEmpty())
+            uiState.hasError -> Text(
+                uiState.error.orEmpty(),
+                modifier = Modifier.testTag("error_message")
+            )
             uiState.isEmpty -> Text(
                 "В этой категории пока нет рецептов",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("empty_state"),
                 textAlign = TextAlign.Center
             )
 

@@ -13,16 +13,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.example.recipeapp.R
 import com.example.recipeapp.core.ui.ScreenHeader
 import com.example.recipeapp.features.categories.presentation.model.CategoriesUiState
 import com.example.recipeapp.ui.theme.Dimens
 
 @Composable
-fun CategoriesScreen(
+fun CategoriesContent(
     uiState: CategoriesUiState,
-    modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         ScreenHeader(
@@ -34,10 +35,14 @@ fun CategoriesScreen(
         when {
             uiState.isLoading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.testTag("loading_indicator")
+                    )
                 }
             }
 
@@ -47,7 +52,8 @@ fun CategoriesScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = uiState.error
+                        text = uiState.error,
+                        modifier = Modifier.testTag("error_message")
                     )
                 }
             }
