@@ -17,13 +17,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipeapp.core.ui.navigation.BottomNavigation
 import com.example.recipeapp.features.categories.presentation.CategoriesViewModel
-import com.example.recipeapp.features.categories.ui.CategoriesScreen
+import com.example.recipeapp.features.categories.ui.CategoriesContent
 import com.example.recipeapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipeapp.features.details.ui.RecipeDetailsRoute
 import com.example.recipeapp.features.favorites.presentation.FavoritesViewModel
 import com.example.recipeapp.features.favorites.ui.FavoritesRoute
 import com.example.recipeapp.features.recipes.presentation.RecipesViewModel
-import com.example.recipeapp.features.recipes.ui.RecipesScreen
+import com.example.recipeapp.features.recipes.ui.RecipesContent
 import com.example.recipeapp.navigation.Destination
 import com.example.recipeapp.navigation.Destination.Companion.DEEP_LINK_SCHEME
 import com.example.recipeapp.ui.theme.RecipeAppTheme
@@ -85,7 +85,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                 composable(Destination.Categories.route) {
                     val categoriesViewModel: CategoriesViewModel = hiltViewModel()
                     val uiState by categoriesViewModel.uiState.collectAsState()
-                    CategoriesScreen(
+                    CategoriesContent(
                         uiState = uiState,
                         modifier = Modifier,
                         onCategoryClick = { categoryId, categoryTitle, imageURL ->
@@ -123,7 +123,7 @@ fun RecipesApp(deepLinkIntent: Intent? = null) {
                 ) {
                     val recipesViewModel: RecipesViewModel = hiltViewModel()
                     val uiState by recipesViewModel.uiState.collectAsState()
-                    RecipesScreen(
+                    RecipesContent(
                         modifier = Modifier,
                         onRecipeClick = { recipe ->
                             navController.navigate(Destination.Details.createRoute(recipe.id))

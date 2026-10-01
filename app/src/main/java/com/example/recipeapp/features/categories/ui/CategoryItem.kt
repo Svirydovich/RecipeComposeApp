@@ -35,7 +35,7 @@ fun CategoryItem(
         )
         Column(Modifier.padding(Dimens.Padding.PaddingMain)) {
             Text(
-                text = category.title,
+                text = category.title.uppercase(),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
