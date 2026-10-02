@@ -1,6 +1,5 @@
 package com.example.recipeapp.features.recipes.presentation
 
-import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,7 +30,7 @@ class RecipesViewModel @Inject constructor(
     init {
         val categoryId: Int = savedStateHandle[Destination.CATEGORY_ID_ARG] ?: -1
         val decodedTitle =
-            Uri.decode(savedStateHandle[Destination.CATEGORY_TITLE_ARG] ?: "")
+            URLDecoder.decode(savedStateHandle[Destination.CATEGORY_TITLE_ARG] ?: "", "UTF-8")
         val decodedImageUrl =
             URLDecoder.decode(savedStateHandle[Destination.CATEGORY_IMAGE_ARG] ?: "", "UTF-8")
 
