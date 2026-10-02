@@ -1,6 +1,5 @@
 package com.example.recipeapp.features.recipes.presentation
 
-import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import com.example.recipeapp.data.model.RecipeDto
 import com.example.recipeapp.data.repository.RecipesRepository
@@ -25,6 +24,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import java.net.URLEncoder
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RecipesViewModelTest {
@@ -38,8 +38,8 @@ class RecipesViewModelTest {
     ): RecipesViewModel {
         val savedState = SavedStateHandle().apply {
             set(Destination.CATEGORY_ID_ARG, categoryId)
-            set(Destination.CATEGORY_TITLE_ARG, Uri.encode(categoryTitle))
-            set(Destination.CATEGORY_IMAGE_ARG, Uri.encode(categoryImage))
+            set(Destination.CATEGORY_TITLE_ARG, URLEncoder.encode(categoryTitle, "UTF-8"))
+            set(Destination.CATEGORY_IMAGE_ARG, URLEncoder.encode(categoryImage, "UTF-8"))
         }
         return RecipesViewModel(savedState, repository)
     }
