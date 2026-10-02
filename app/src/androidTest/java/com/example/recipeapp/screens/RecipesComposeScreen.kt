@@ -1,4 +1,4 @@
-package com.example.recipeapp.features.recipes.ui
+package com.example.recipeapp.screens
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import io.github.kakaocup.compose.node.element.ComposeScreen
