@@ -25,7 +25,11 @@ fun CategoriesContent(
     onCategoryClick: (Int, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .testTag("categories_screen")
+    ) {
         ScreenHeader(
             imageModel = R.drawable.bcg_categories,
             contentDescription = "Фоновое изображение категории",
@@ -64,7 +68,7 @@ fun CategoriesContent(
                     contentPadding = PaddingValues(Dimens.Padding.PaddingMain),
                     horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
                     verticalArrangement = Arrangement.spacedBy(Dimens.Spacing.Medium),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize().testTag("categories_grid")
                 ) {
                     items(
                         items = uiState.categories,
