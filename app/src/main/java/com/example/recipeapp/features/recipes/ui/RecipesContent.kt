@@ -26,7 +26,11 @@ fun RecipesContent(
     onRecipeClick: (RecipeUiModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .testTag("recipes_screen")
+    ) {
         ScreenHeader(
             imageModel = uiState.categoryImageUrl.takeIf { it.isNotEmpty() }
                 ?: R.drawable.bcg_recipes_list,
@@ -52,9 +56,12 @@ fun RecipesContent(
                 uiState.error.orEmpty(),
                 modifier = Modifier.testTag("error_message")
             )
+
             uiState.isEmpty -> Text(
                 "В этой категории пока нет рецептов",
-                modifier = Modifier.fillMaxWidth().testTag("empty_state"),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("empty_state"),
                 textAlign = TextAlign.Center
             )
 
